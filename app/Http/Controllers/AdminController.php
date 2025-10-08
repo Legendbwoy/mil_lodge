@@ -6,8 +6,10 @@ use App\Models\User;
 use App\Models\Booking;
 use App\Models\Report;
 use App\Models\Accommodation;
+use App\Models\Amenity;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use Carbon\Carbon;
 
 class AdminController extends Controller
@@ -233,6 +235,24 @@ class AdminController extends Controller
     }
 
     /**
+     * Show the booking page with all available accommodations
+     */
+    public function showBookingPage(Request $request)
+    {
+        $accommodations = Accommodation::where('is_available', true)
+            ->where('available_beds', '>', 0)
+            ->with('amenities')
+            ->get();
+
+        $selectedAccommodation = null;
+        if ($request->has('accommodation')) {
+            $selectedAccommodation = Accommodation::find($request->accommodation);
+        }
+
+        return view('admin.bookings.create', compact('accommodations', 'selectedAccommodation'));
+    }
+
+    /**
      * Get checkout notifications for upcoming checkouts
      */
     private function getCheckoutNotifications()
@@ -342,7 +362,9 @@ class AdminController extends Controller
         ]);
     }
 
-    // Method to update accommodation status (temporary version without status column)
+    /**
+     * Update accommodation status
+     */
     public function updateAccommodationStatus(Request $request, $id)
     {
         try {
@@ -391,7 +413,9 @@ class AdminController extends Controller
         }
     }
 
-    // Helper method to get status badge class
+    /**
+     * Helper method to get status badge class
+     */
     private function getStatusBadge($status)
     {
         $statusClasses = [
@@ -402,7 +426,9 @@ class AdminController extends Controller
         return $statusClasses[$status] ?? 'secondary';
     }
 
-    // Method to update booking status
+    /**
+     * Update booking status
+     */
     public function updateBookingStatus(Request $request, $id)
     {
         try {
@@ -446,7 +472,9 @@ class AdminController extends Controller
         }
     }
 
-    // Helper method to get booking status badge
+    /**
+     * Helper method to get booking status badge
+     */
     private function getBookingStatusBadge($status)
     {
         $statusClasses = [
@@ -458,7 +486,9 @@ class AdminController extends Controller
         return $statusClasses[$status] ?? 'secondary';
     }
 
-    // Helper method to update accommodation beds based on booking status changes
+    /**
+     * Helper method to update accommodation beds based on booking status changes
+     */
     private function updateAccommodationBeds($accommodation, $oldStatus, $newStatus, $numberOfBeds)
     {
         if ($oldStatus === 'checked_in' && $newStatus !== 'checked_in') {
@@ -472,7 +502,9 @@ class AdminController extends Controller
         $accommodation->save();
     }
 
-    // Method to get booking details for modal
+    /**
+     * Get booking details for modal
+     */
     public function getBookingDetails($id)
     {
         try {
@@ -510,7 +542,9 @@ class AdminController extends Controller
         }
     }
 
-    // Method to update report status
+    /**
+     * Update report status
+     */
     public function updateReportStatus(Request $request, $id)
     {
         try {
@@ -559,7 +593,9 @@ class AdminController extends Controller
         }
     }
 
-    // Method to get report details for modal
+    /**
+     * Get report details for modal
+     */
     public function getReportDetails($id)
     {
         try {
@@ -596,5 +632,59 @@ class AdminController extends Controller
                 'message' => 'Report not found'
             ], 404);
         }
+    }
+
+    /**
+     * Show finance overview page
+     */
+    public function finance()
+    {
+        $totalRevenue = Booking::where('status', '!=', 'cancelled')->sum('total_amount');
+        $monthlyRevenue = Booking::where('status', '!=', 'cancelled')
+            ->whereMonth('created_at', now()->month)
+            ->whereYear('created_at', now()->year)
+            ->sum('total_amount');
+        
+        $recentTransactions = Booking::with('accommodation')
+            ->where('status', '!=', 'cancelled')
+            ->latest()
+            ->take(10)
+            ->get();
+
+        return view('admin.finance.index', compact(
+            'totalRevenue',
+            'monthlyRevenue',
+            'recentTransactions'
+        ));
+    }
+
+    /**
+     * Show reports management page
+     */
+    public function reports(Request $request)
+    {
+        $status = $request->get('status');
+        $priority = $request->get('priority');
+        
+        $query = Report::with(['user', 'accommodation'])->latest();
+        
+        if ($status && in_array($status, ['pending', 'in_progress', 'resolved', 'cancelled'])) {
+            $query->where('status', $status);
+        }
+        
+        if ($priority && in_array($priority, ['low', 'medium', 'high', 'urgent'])) {
+            $query->where('priority', $priority);
+        }
+        
+        $reports = $query->paginate(15);
+        
+        $pendingReportsCount = Report::where('status', 'pending')->count();
+        $urgentReportsCount = Report::where('priority', 'urgent')->count();
+
+        return view('admin.reports.index', compact(
+            'reports',
+            'pendingReportsCount',
+            'urgentReportsCount'
+        ));
     }
 }

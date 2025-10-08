@@ -13,7 +13,18 @@ class AccommodationController extends Controller
     public function index()
     {
         $accommodations = Accommodation::with('amenities')->paginate(10);
-        return view('admin.accommodations.index', compact('accommodations'));
+        
+        // Calculate summary statistics
+        $totalBeds = Accommodation::sum('total_beds');
+        $availableBeds = Accommodation::sum('available_beds');
+        $occupiedBeds = $totalBeds - $availableBeds;
+
+        return view('admin.accommodations.index', compact(
+            'accommodations', 
+            'totalBeds', 
+            'availableBeds', 
+            'occupiedBeds'
+        ));
     }
 
     public function create()
@@ -24,6 +35,24 @@ class AccommodationController extends Controller
     public function edit(Accommodation $accommodation)
     {
         return view('admin.accommodations.edit', compact('accommodation'));
+    }
+
+    /**
+     * Show the booking page with all available accommodations
+     */
+    public function showBookingPage(Request $request)
+    {
+        $accommodations = Accommodation::where('is_available', true)
+            ->where('available_beds', '>', 0)
+            ->with('amenities')
+            ->get();
+
+        $selectedAccommodation = null;
+        if ($request->has('accommodation')) {
+            $selectedAccommodation = Accommodation::find($request->accommodation);
+        }
+
+        return view('admin.bookings.create', compact('accommodations', 'selectedAccommodation'));
     }
 
     /**
@@ -179,5 +208,115 @@ class AccommodationController extends Controller
         // Redirect to the accommodations index with a success message
         return redirect()->route('admin.accommodations.index')->with('success',
             'Room updated successfully.');
+    }
+
+    /**
+     * Remove the specified accommodation from storage.
+     */
+    public function destroy(Accommodation $accommodation)
+    {
+        // Delete associated images from storage
+        if ($accommodation->images) {
+            foreach ($accommodation->images as $image) {
+                Storage::disk('public')->delete($image);
+            }
+        }
+
+        // Detach amenities
+        $accommodation->amenities()->detach();
+
+        // Delete the accommodation
+        $accommodation->delete();
+
+        return redirect()->route('admin.accommodations.index')
+            ->with('success', 'Accommodation deleted successfully.');
+    }
+
+    /**
+     * Update accommodation status (available/unavailable)
+     */
+    public function updateStatus(Request $request, Accommodation $accommodation)
+    {
+        $request->validate([
+            'status' => 'required|boolean'
+        ]);
+
+        $accommodation->update([
+            'is_available' => $request->status
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Accommodation status updated successfully.'
+        ]);
+    }
+
+    /**
+     * Quick update for accommodation bed status
+     */
+    public function quickStatusUpdate(Request $request, $id)
+    {
+        $request->validate([
+            'available_beds' => 'required|integer|min:0'
+        ]);
+
+        $accommodation = Accommodation::findOrFail($id);
+        
+        if ($request->available_beds > $accommodation->total_beds) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Available beds cannot exceed total beds.'
+            ], 422);
+        }
+
+        $accommodation->update([
+            'available_beds' => $request->available_beds
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Bed status updated successfully.',
+            'accommodation' => $accommodation
+        ]);
+    }
+
+    /**
+     * Bulk status update for accommodations
+     */
+    public function bulkStatusUpdate(Request $request)
+    {
+        $request->validate([
+            'accommodation_ids' => 'required|array',
+            'accommodation_ids.*' => 'exists:accommodations,id',
+            'status' => 'required|boolean'
+        ]);
+
+        Accommodation::whereIn('id', $request->accommodation_ids)
+            ->update(['is_available' => $request->status]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Accommodations status updated successfully.'
+        ]);
+    }
+
+    /**
+     * Get accommodation statistics for dashboard
+     */
+    public function getStats()
+    {
+        $totalAccommodations = Accommodation::count();
+        $availableAccommodations = Accommodation::where('is_available', true)->count();
+        $totalBeds = Accommodation::sum('total_beds');
+        $availableBeds = Accommodation::sum('available_beds');
+        $occupiedBeds = $totalBeds - $availableBeds;
+
+        return response()->json([
+            'total_accommodations' => $totalAccommodations,
+            'available_accommodations' => $availableAccommodations,
+            'total_beds' => $totalBeds,
+            'available_beds' => $availableBeds,
+            'occupied_beds' => $occupiedBeds,
+        ]);
     }
 }

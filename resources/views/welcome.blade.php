@@ -75,7 +75,7 @@
                 <div class="row mb-4">
                     <div class="col-md-8">
                         <h2 class="section-title h4 mb-2">Search Accommodations</h2>
-                        <p class="text-muted mb-0">Filter by location, dates, and guests to find your ideal stay</p>
+                        <p class="text-muted mb-0">Filter by location, type, and capacity to find your ideal stay</p>
                     </div>
                 </div>
 
@@ -83,7 +83,7 @@
                 <div class="search-filter">
                     <form action="{{ route('home') }}" method="GET">
                         <div class="row g-3 align-items-end">
-                            <div class="col-md-3">
+                            <div class="col-md-4">
                                 <div class="form-group">
                                     <label class="form-label fw-semibold mb-2">Destination</label>
                                     <div class="input-group input-group-lg">
@@ -97,7 +97,7 @@
                                 </div>
                             </div>
 
-                            <div class="col-md-2">
+                            <div class="col-md-3">
                                 <div class="form-group">
                                     <label class="form-label fw-semibold mb-2">Guests</label>
                                     <div class="input-group input-group-lg">
@@ -118,7 +118,7 @@
                                 </div>
                             </div>
 
-                            <div class="col-md-2">
+                            <div class="col-md-3">
                                 <div class="form-group">
                                     <label class="form-label fw-semibold mb-2">Accommodation Type</label>
                                     <div class="input-group input-group-lg">
@@ -140,43 +140,6 @@
                                             <option value="recreation_lodge"
                                                 {{ request('type') == 'recreation_lodge' ? 'selected' : '' }}>Recreation
                                                 Lodge</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label class="form-label fw-semibold mb-2">Price Range</label>
-                                    <div class="input-group input-group-lg">
-                                        <span class="input-group-text bg-white border-end-0">
-                                            <i class="fas fa-dollar-sign text-primary"></i>
-                                        </span>
-                                        <select name="price_range" class="form-control border-start-0 ps-0"
-                                            style="border-radius: 0 8px 8px 0;">
-                                            <option value="">Any Price</option>
-                                            <option value="0-50"
-                                                {{ request('price_range') == '0-50' ? 'selected' : '' }}>$0 - $50</option>
-                                            <option value="50-100"
-                                                {{ request('price_range') == '50-100' ? 'selected' : '' }}>$50 - $100
-                                            </option>
-                                            <option value="100-150"
-                                                {{ request('price_range') == '100-150' ? 'selected' : '' }}>$100 - $150
-                                            </option>
-                                            <option value="150-200"
-                                                {{ request('price_range') == '150-200' ? 'selected' : '' }}>$150 - $200
-                                            </option>
-                                            <option value="200-300"
-                                                {{ request('price_range') == '200-300' ? 'selected' : '' }}>$200 - $300
-                                            </option>
-                                            <option value="300-500"
-                                                {{ request('price_range') == '300-500' ? 'selected' : '' }}>$300 - $500
-                                            </option>
-                                            <option value="500-1000"
-                                                {{ request('price_range') == '500-1000' ? 'selected' : '' }}>$500 - $1000
-                                            </option>
-                                            <option value="1000+"
-                                                {{ request('price_range') == '1000+' ? 'selected' : '' }}>$1000+</option>
                                         </select>
                                     </div>
                                 </div>
@@ -204,18 +167,6 @@
                         <div class="collapse mt-3" id="advancedFilters">
                             <div class="card card-body border-0 bg-light">
                                 <div class="row g-3">
-                                    <div class="col-md-3">
-                                        <label class="form-label fw-semibold">Custom Price Range</label>
-                                        <div class="d-flex align-items-center gap-2">
-                                            <input type="number" class="form-control" placeholder="Min $"
-                                                name="price_min" value="{{ request('price_min') }}" min="0"
-                                                step="10">
-                                            <span class="text-muted">-</span>
-                                            <input type="number" class="form-control" placeholder="Max $"
-                                                name="price_max" value="{{ request('price_max') }}" min="0"
-                                                step="10">
-                                        </div>
-                                    </div>
                                     <div class="col-md-2">
                                         <label class="form-label fw-semibold">Bedrooms</label>
                                         <select class="form-control" name="bedrooms">
@@ -256,12 +207,6 @@
                                         <label class="form-label fw-semibold">Sort By</label>
                                         <select class="form-control" name="sort">
                                             <option value="">Default</option>
-                                            <option value="price_asc"
-                                                {{ request('sort') == 'price_asc' ? 'selected' : '' }}>Price: Low to High
-                                            </option>
-                                            <option value="price_desc"
-                                                {{ request('price_desc') == 'price_desc' ? 'selected' : '' }}>Price: High
-                                                to Low</option>
                                             <option value="rating_desc"
                                                 {{ request('sort') == 'rating_desc' ? 'selected' : '' }}>Highest Rated
                                             </option>
@@ -273,40 +218,6 @@
                                         </select>
                                     </div>
                                 </div>
-
-                                <!-- Quick Price Buttons -->
-                                <div class="row mt-3">
-                                    <div class="col-12">
-                                        <label class="form-label fw-semibold mb-2">Quick Price Filters</label>
-                                        <div class="d-flex flex-wrap gap-2">
-                                            <button type="button"
-                                                class="btn btn-outline-primary btn-sm price-quick-filter"
-                                                data-price="0-100">
-                                                Under $100
-                                            </button>
-                                            <button type="button"
-                                                class="btn btn-outline-primary btn-sm price-quick-filter"
-                                                data-price="100-200">
-                                                $100 - $200
-                                            </button>
-                                            <button type="button"
-                                                class="btn btn-outline-primary btn-sm price-quick-filter"
-                                                data-price="200-300">
-                                                $200 - $300
-                                            </button>
-                                            <button type="button"
-                                                class="btn btn-outline-primary btn-sm price-quick-filter"
-                                                data-price="300-500">
-                                                $300 - $500
-                                            </button>
-                                            <button type="button"
-                                                class="btn btn-outline-primary btn-sm price-quick-filter"
-                                                data-price="500-1000">
-                                                $500 - $1000
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
                             </div>
                         </div>
 
@@ -315,9 +226,6 @@
                                 'location',
                                 'guests',
                                 'type',
-                                'price_range',
-                                'price_min',
-                                'price_max',
                                 'bedrooms',
                                 'bathrooms',
                             ]))
@@ -347,25 +255,6 @@
                                             <span class="badge bg-primary">
                                                 Type: {{ ucfirst(str_replace('_', ' ', request('type'))) }}
                                                 <a href="{{ request()->fullUrlWithQuery(['type' => null]) }}"
-                                                    class="text-white ms-1">
-                                                    <i class="fas fa-times"></i>
-                                                </a>
-                                            </span>
-                                        @endif
-                                        @if (request('price_range'))
-                                            <span class="badge bg-primary">
-                                                Price:
-                                                ${{ str_replace('-', ' - $', request('price_range')) }}{{ request('price_range') == '1000+' ? '1000+' : '' }}
-                                                <a href="{{ request()->fullUrlWithQuery(['price_range' => null]) }}"
-                                                    class="text-white ms-1">
-                                                    <i class="fas fa-times"></i>
-                                                </a>
-                                            </span>
-                                        @endif
-                                        @if (request('price_min') || request('price_max'))
-                                            <span class="badge bg-primary">
-                                                Price: ${{ request('price_min', '0') }} - ${{ request('price_max', '∞') }}
-                                                <a href="{{ request()->fullUrlWithQuery(['price_min' => null, 'price_max' => null]) }}"
                                                     class="text-white ms-1">
                                                     <i class="fas fa-times"></i>
                                                 </a>
@@ -414,12 +303,6 @@
                     </button>
                     <ul class="dropdown-menu">
                         <li><a class="dropdown-item"
-                                href="{{ request()->fullUrlWithQuery(['sort' => 'price_asc']) }}">Price: Low to High</a>
-                        </li>
-                        <li><a class="dropdown-item"
-                                href="{{ request()->fullUrlWithQuery(['sort' => 'price_desc']) }}">Price: High to Low</a>
-                        </li>
-                        <li><a class="dropdown-item"
                                 href="{{ request()->fullUrlWithQuery(['sort' => 'rating_desc']) }}">Highest Rated</a></li>
                         <li><a class="dropdown-item"
                                 href="{{ request()->fullUrlWithQuery(['sort' => 'name_asc']) }}">Name: A-Z</a></li>
@@ -436,14 +319,6 @@
         <div class="collapse mb-4" id="filterCollapse">
             <div class="card card-body">
                 <div class="row g-3">
-                    <div class="col-md-3">
-                        <label class="form-label fw-semibold">Price Range</label>
-                        <div class="d-flex align-items-center gap-2">
-                            <input type="number" class="form-control" placeholder="Min" id="priceMin">
-                            <span class="text-muted">-</span>
-                            <input type="number" class="form-control" placeholder="Max" id="priceMax">
-                        </div>
-                    </div>
                     <div class="col-md-3">
                         <label class="form-label fw-semibold">Accommodation Type</label>
                         <select class="form-control" id="typeFilter">
@@ -513,7 +388,7 @@
 
                 @endphp
 
-                <div class="col-lg-4 col-md-6 mb-4 accommodation-item" data-price="{{ $accommodation->price_per_night }}"
+                <div class="col-lg-4 col-md-6 mb-4 accommodation-item"
                     data-type="{{ $accommodation->type }}" data-bedrooms="{{ $accommodation->bedrooms }}"
                     data-available-beds="{{ $accommodation->available_beds }}"
                     data-total-beds="{{ $accommodation->total_beds }}"
@@ -533,10 +408,6 @@
                                     <span class="badge bg-danger py-2 px-3">Not Available</span>
                                 </div>
                             @endif
-
-                            <span class="price-tag position-absolute top-0 end-0 m-3 badge bg-primary fs-6 py-2">
-                                {{ $accommodation->price_formatted }}/night
-                            </span>
 
                             <img src="{{ $featuredUrl }}" class="card-img-top main-image"
                                 alt="{{ $accommodation->name }}"
@@ -566,7 +437,6 @@
                                         <button class="btn btn-primary btn-sm book-now-btn" data-bs-toggle="modal"
                                             data-bs-target="#bookingModal" data-accommodation-id="{{ $accommodation->id }}"
                                             data-accommodation-name="{{ $accommodation->name }}"
-                                            data-price="{{ $accommodation->price_per_night }}"
                                             data-available-beds="{{ $accommodation->available_beds }}"
                                             data-total-beds="{{ $accommodation->total_beds }}">
                                             <i class="fas fa-calendar-check"></i>
@@ -646,7 +516,6 @@
                                     <button class="btn btn-primary book-now-btn" data-bs-toggle="modal"
                                         data-bs-target="#bookingModal" data-accommodation-id="{{ $accommodation->id }}"
                                         data-accommodation-name="{{ $accommodation->name }}"
-                                        data-price="{{ $accommodation->price_per_night }}"
                                         data-available-beds="{{ $accommodation->available_beds }}"
                                         data-total-beds="{{ $accommodation->total_beds }}">
                                         <i class="fas fa-calendar-check me-1"></i> Book Now
@@ -1063,17 +932,9 @@
                                                 <span id="modalAccommodationInfo" class="fw-semibold ms-2"></span>
                                             </div>
                                             <div class="mb-2">
-                                                <strong class="text-muted">Rate:</strong>
-                                                <span id="modalPricePerNight" class="fw-semibold ms-2"></span> per bed per night
-                                            </div>
-                                            <div class="mb-2">
                                                 <strong class="text-muted">Beds:</strong>
                                                 <span id="modalBedsCount" class="fw-semibold ms-2">0</span> beds × 
                                                 <span id="modalNightsSummary" class="fw-semibold">0</span> nights
-                                            </div>
-                                            <div class="mb-0">
-                                                <strong class="text-muted">Total Amount:</strong>
-                                                <span id="modalTotalPrice" class="h5 text-primary fw-bold ms-2">$0.00</span>
                                             </div>
                                         </div>
                                         <div class="col-md-4 text-center">
@@ -1145,11 +1006,6 @@
             height: 3px;
             background: linear-gradient(90deg, #0d6efd, #6f42c1);
             border-radius: 2px;
-        }
-
-        .price-tag {
-            font-size: 0.9rem;
-            font-weight: 600;
         }
 
         .featured-badge {
@@ -1235,7 +1091,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // --- Booking modal logic ---
     let currentAccommodationId = null;
-    let currentPricePerNight = 0;
     let currentAvailableBeds = 0;
     let currentTotalBeds = 0;
 
@@ -1247,14 +1102,12 @@ document.addEventListener('DOMContentLoaded', function() {
             
             currentAccommodationId = btn.dataset.accommodationId;
             const accommodationName = btn.dataset.accommodationName || '';
-            currentPricePerNight = parseFloat(btn.dataset.price) || 0;
             currentAvailableBeds = parseInt(btn.dataset.availableBeds) || 0;
             currentTotalBeds = parseInt(btn.dataset.totalBeds) || 0;
 
             qs('#modalAccommodationId').value = currentAccommodationId;
             qs('#modalAccommodationName').textContent = accommodationName;
             qs('#modalAccommodationInfo').textContent = accommodationName;
-            qs('#modalPricePerNight').textContent = '$' + currentPricePerNight.toFixed(2);
             qs('#modalAvailableBeds').textContent = currentAvailableBeds;
             qs('#modalTotalBeds').textContent = currentTotalBeds;
 
@@ -1343,8 +1196,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 qs('#submitBookingBtn').disabled = false;
             }
             
-            calculateTotalPrice();
-            
             // Show the modal
             if (bookingModal) {
                 bookingModal.show();
@@ -1378,7 +1229,6 @@ document.addEventListener('DOMContentLoaded', function() {
             const bedrooms = card?.dataset?.bedrooms || 'N/A';
             const bathrooms = card?.dataset?.bathrooms || 'N/A';
             const maxGuests = card?.dataset?.maxGuests || 'N/A';
-            const price = card?.dataset?.price || '0';
 
             // Build images html
             let imagesHtml = '';
@@ -1441,8 +1291,6 @@ document.addEventListener('DOMContentLoaded', function() {
                                     <h6 class="mb-1">Bed Availability</h6>
                                     <p class="mb-0">
                                         <strong>${availableBeds}/${totalBeds}</strong> beds available
-                                        <br>
-                                        <small>Rate: <strong>$${parseFloat(price).toFixed(2)}</strong> per bed per night</small>
                                     </p>
                                 </div>
                                 <i class="fas fa-bed fa-2x text-primary"></i>
@@ -1524,26 +1372,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const checkoutInput = qs('#check_out_date');
     const bedsSelect = qs('#number_of_beds');
 
-    function calculateTotalPrice() {
-        if (!checkinInput || !checkoutInput || !bedsSelect) return;
-        
-        const checkin = new Date(checkinInput.value);
-        const checkout = new Date(checkoutInput.value);
-        const numberOfBeds = parseInt(bedsSelect.value) || 0;
-        
-        if (checkin && checkout && checkout > checkin && numberOfBeds > 0) {
-            const nights = Math.ceil((checkout - checkin) / (1000 * 60 * 60 * 24));
-            const totalPrice = nights * currentPricePerNight * numberOfBeds;
-            if (qs('#modalTotalPrice')) qs('#modalTotalPrice').textContent = '$' + totalPrice.toFixed(2);
-            if (qs('#modalNights')) qs('#modalNights').textContent = nights;
-            if (qs('#modalBedsCount')) qs('#modalBedsCount').textContent = numberOfBeds;
-        } else {
-            if (qs('#modalTotalPrice')) qs('#modalTotalPrice').textContent = '$0.00';
-            if (qs('#modalNights')) qs('#modalNights').textContent = '0';
-            if (qs('#modalBedsCount')) qs('#modalBedsCount').textContent = '0';
-        }
-    }
-
     // SIMPLIFIED FORM VALIDATION - Only validate on submit, not real-time
     function validateFormOnSubmit() {
         const requiredFields = [
@@ -1590,20 +1418,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 }
             }
-            calculateTotalPrice();
         });
-        
-        if (checkoutInput) {
-            checkoutInput.addEventListener('change', function() {
-                calculateTotalPrice();
-            });
-        }
-        
-        if (bedsSelect) {
-            bedsSelect.addEventListener('change', function() {
-                calculateTotalPrice();
-            });
-        }
     }
 
     // Form submit validation - ONLY validate when form is submitted
@@ -1649,39 +1464,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
         });
-    }
-
-    // Price filter interactions
-    const quickPriceButtons = document.querySelectorAll('.price-quick-filter');
-    const priceRangeSelect = document.querySelector('select[name="price_range"]');
-
-    if (quickPriceButtons.length > 0 && priceRangeSelect) {
-        quickPriceButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                const priceValue = this.getAttribute('data-price');
-                if (priceRangeSelect) {
-                    priceRangeSelect.value = priceValue;
-                }
-
-                // Highlight the active quick filter
-                quickPriceButtons.forEach(btn => {
-                    btn.classList.remove('btn-primary');
-                    btn.classList.add('btn-outline-primary');
-                });
-                this.classList.remove('btn-outline-primary');
-                this.classList.add('btn-primary');
-            });
-        });
-
-        // Sync quick filters with select when page loads
-        if (priceRangeSelect.value) {
-            quickPriceButtons.forEach(btn => {
-                if (btn.getAttribute('data-price') === priceRangeSelect.value) {
-                    btn.classList.remove('btn-outline-primary');
-                    btn.classList.add('btn-primary');
-                }
-            });
-        }
     }
 
     // Helper function to escape HTML

@@ -499,6 +499,7 @@
     @yield('scripts')
 
     <script>
+        
         // [ customer-scroll ] start
         var px = new PerfectScrollbar('.cust-scroll', {
             wheelSpeed: .5,

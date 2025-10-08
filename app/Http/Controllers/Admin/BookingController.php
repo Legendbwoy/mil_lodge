@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
+use App\Models\Accommodation; // Add this import
 use Illuminate\Http\Request;
 
 class BookingController extends Controller
@@ -16,7 +17,12 @@ class BookingController extends Controller
 
     public function create()
     {
-        return view('admin.bookings.create');
+        // Fetch available accommodations with beds
+        $accommodations = Accommodation::where('available_beds', '>', 0)
+            ->where('status', 'available')
+            ->get();
+            
+        return view('admin.bookings.create', compact('accommodations'));
     }
 
     public function show(Booking $booking)
