@@ -221,7 +221,7 @@
                     </ul>
                 </li> --}}
 
-                <!-- Finance & Analytics -->
+                {{-- <!-- Finance & Analytics -->
                 <li class="nav-item pcoded-menu-caption">
                     <label>Analytics & Finance</label>
                 </li>
@@ -231,7 +231,7 @@
                         <span class="pcoded-micon"><i class="feather icon-dollar-sign"></i></span>
                         <span class="pcoded-mtext">Finance Overview</span>
                     </a>
-                </li>
+                </li> --}}
 
                 <!-- Notifications -->
                 {{-- <li class="nav-item {{ request()->routeIs('admin.notifications') ? 'active' : '' }}">

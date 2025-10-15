@@ -17,29 +17,27 @@
                 <div class="card-body px-4">
                     <div class="booking-progress">
                         <div class="progress" style="height: 10px;">
-                            <div class="progress-bar bg-primary progress-bar-striped progress-bar-animated" style="width: 25%"></div>
+                            <div class="progress-bar bg-primary progress-bar-striped progress-bar-animated" 
+                                 id="progressBar" style="width: 25%"></div>
                         </div>
                         <div class="d-flex justify-content-between mt-3">
                             <div class="text-center">
-                                <div class="progress-step bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-2" style="width: 35px; height: 35px;">
+                                <div class="progress-step bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-2" 
+                                     style="width: 35px; height: 35px;">
                                     <i class="fas fa-home"></i>
                                 </div>
-                                <div class="text-primary fw-bold small">Accommodation</div>
+                                <div class="text-primary fw-bold small">Select Room</div>
                             </div>
                             <div class="text-center">
-                                <div class="progress-step bg-light border text-muted rounded-circle d-inline-flex align-items-center justify-content-center mb-2" style="width: 35px; height: 35px;">
+                                <div class="progress-step bg-light border text-muted rounded-circle d-inline-flex align-items-center justify-content-center mb-2" 
+                                     style="width: 35px; height: 35px;">
                                     <i class="fas fa-user"></i>
-                                </div>
-                                <div class="text-muted small">Personal Info</div>
-                            </div>
-                            <div class="text-center">
-                                <div class="progress-step bg-light border text-muted rounded-circle d-inline-flex align-items-center justify-content-center mb-2" style="width: 35px; height: 35px;">
-                                    <i class="fas fa-calendar"></i>
                                 </div>
                                 <div class="text-muted small">Booking Details</div>
                             </div>
                             <div class="text-center">
-                                <div class="progress-step bg-light border text-muted rounded-circle d-inline-flex align-items-center justify-content-center mb-2" style="width: 35px; height: 35px;">
+                                <div class="progress-step bg-light border text-muted rounded-circle d-inline-flex align-items-center justify-content-center mb-2" 
+                                     style="width: 35px; height: 35px;">
                                     <i class="fas fa-check"></i>
                                 </div>
                                 <div class="text-muted small">Confirmation</div>
@@ -49,16 +47,16 @@
                 </div>
             </div>
 
-            <!-- Main Booking Form -->
-            <div class="card">
+            <!-- Step 1: Accommodation Selection -->
+            <div class="card" id="step1Accommodation">
                 <div class="card-header bg-primary text-white py-3">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
                             <h4 class="mb-1">
-                                <i class="fas fa-calendar-plus me-2"></i>
-                                Book Accommodation
+                                <i class="fas fa-home me-2"></i>
+                                Select Your Accommodation
                             </h4>
-                            <p class="mb-0 opacity-75 small" id="pageAccommodationSubtitle">Select an accommodation to begin</p>
+                            <p class="mb-0 opacity-75 small">Choose from available rooms to proceed with booking</p>
                         </div>
                         <a href="{{ route('home') }}" class="btn btn-light btn-sm">
                             <i class="fas fa-arrow-left me-2"></i> Back to List
@@ -66,69 +64,173 @@
                     </div>
                 </div>
 
+                <div class="card-body p-4">
+                    <!-- System Alerts Container -->
+                    <div id="systemAlerts"></div>
+
+                    @if($accommodations->isEmpty())
+                        <div class="text-center py-5">
+                            <i class="fas fa-bed fa-3x text-muted mb-3"></i>
+                            <h5 class="text-muted">No Accommodations Available</h5>
+                            <p class="text-muted mb-4">There are currently no available rooms for booking.</p>
+                            <a href="{{ route('home') }}" class="btn btn-primary">
+                                <i class="fas fa-arrow-left me-2"></i> Return Home
+                            </a>
+                        </div>
+                    @else
+                        <div class="row g-4">
+                            @foreach($accommodations as $accommodation)
+                                @php
+                                    $images = [];
+                                    if (is_array($accommodation->images)) {
+                                        $images = $accommodation->images;
+                                    } else {
+                                        $decoded = json_decode($accommodation->images, true);
+                                        if (is_array($decoded)) {
+                                            $images = $decoded;
+                                        }
+                                    }
+                                    $featuredUrl = count($images) ? $images[0] : asset('images/default-accommodation.jpg');
+                                    $availabilityClass = $accommodation->available_beds > 0 ? 'border-success' : 'border-danger';
+                                    $availabilityText = $accommodation->available_beds > 0 ? 'text-success' : 'text-danger';
+                                    $availabilityIcon = $accommodation->available_beds > 0 ? 'fa-check-circle' : 'fa-times-circle';
+                                @endphp
+                                
+                                <div class="col-md-6 col-lg-4">
+                                    <div class="card accommodation-card h-100" 
+                                         data-accommodation='@json($accommodation)'
+                                         data-featured-image="{{ $featuredUrl }}">
+                                        <div class="position-relative">
+                                            <img src="{{ $featuredUrl }}" 
+                                                 class="card-img-top" 
+                                                 alt="{{ $accommodation->name }}"
+                                                 style="height: 200px; object-fit: cover;">
+                                            <div class="position-absolute top-0 end-0 m-2">
+                                                <span class="badge {{ $availabilityClass }} bg-white border border-2 fs-6">
+                                                    <i class="fas {{ $availabilityIcon }} {{ $availabilityText }} me-1"></i>
+                                                    {{ $accommodation->available_beds }}/{{ $accommodation->total_beds }} beds
+                                                </span>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="card-body">
+                                            <h5 class="card-title text-primary">{{ $accommodation->name }}</h5>
+                                            <p class="card-text text-muted mb-2">
+                                                <i class="fas fa-map-marker-alt me-2"></i>
+                                                {{ $accommodation->location }}
+                                            </p>
+                                            
+                                            <div class="accommodation-features mb-3">
+                                                <div class="row text-center g-2">
+                                                    <div class="col-4">
+                                                        <div class="border rounded p-2 bg-light">
+                                                            <i class="fas fa-bed text-primary mb-1"></i>
+                                                            <div class="small fw-bold">{{ $accommodation->bedrooms }}</div>
+                                                            <small class="text-muted">Beds</small>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-4">
+                                                        <div class="border rounded p-2 bg-light">
+                                                            <i class="fas fa-bath text-primary mb-1"></i>
+                                                            <div class="small fw-bold">{{ $accommodation->bathrooms }}</div>
+                                                            <small class="text-muted">Baths</small>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-4">
+                                                        <div class="border rounded p-2 bg-light">
+                                                            <i class="fas fa-users text-primary mb-1"></i>
+                                                            <div class="small fw-bold">{{ $accommodation->max_guests }}</div>
+                                                            <small class="text-muted">Guests</small>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <p class="card-text small text-muted">
+                                                {{ Str::limit($accommodation->description, 100) }}
+                                            </p>
+
+                                            @if($accommodation->available_beds > 0)
+                                                <button class="btn btn-primary w-100 select-accommodation-btn" 
+                                                        data-id="{{ $accommodation->id }}">
+                                                    <i class="fas fa-check me-2"></i>
+                                                    Select Room
+                                                </button>
+                                            @else
+                                                <button class="btn btn-outline-secondary w-100" disabled>
+                                                    <i class="fas fa-times me-2"></i>
+                                                    No Beds Available
+                                                </button>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    @endif
+                </div>
+            </div>
+
+            <!-- Step 2: Booking Form (Initially Hidden) -->
+            <div class="card d-none" id="step2BookingForm">
+                <div class="card-header bg-success text-white py-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h4 class="mb-1">
+                                <i class="fas fa-calendar-plus me-2"></i>
+                                Complete Your Booking
+                            </h4>
+                            <p class="mb-0 opacity-75 small" id="selectedRoomTitle">Selected Room: <span id="selectedRoomName"></span></p>
+                        </div>
+                        <button type="button" class="btn btn-light btn-sm" id="changeRoomBtn">
+                            <i class="fas fa-sync me-2"></i> Change Room
+                        </button>
+                    </div>
+                </div>
+
                 <form id="bookingForm" method="POST" action="{{ route('bookings.store') }}" novalidate>
                     @csrf
-                    <input type="hidden" name="accommodation_id" id="pageAccommodationId">
+                    <input type="hidden" name="accommodation_id" id="accommodationId">
+                    <input type="hidden" name="accommodation_name" id="accommodationName">
 
                     <div class="card-body p-4">
-                        <!-- System Alerts Container -->
-                        <div id="systemAlerts"></div>
-
-                        <!-- Accommodation Selection Alert -->
-                        <div class="alert alert-info border-0 mb-4" id="selectionAlert">
-                            <div class="d-flex align-items-center">
-                                <i class="fas fa-info-circle me-3"></i>
-                                <div class="flex-grow-1">
-                                    <strong class="d-block mb-1">Select an Accommodation</strong>
-                                    Choose from available accommodations below to start your booking process.
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Selected Accommodation Details -->
-                        <div class="card border-primary mb-4" id="selectedAccommodationCard" style="display: none;">
-                            <div class="card-header bg-primary text-white py-3 d-flex justify-content-between align-items-center">
-                                <h5 class="mb-0">
+                        <!-- Selected Room Summary -->
+                        <div class="card border-success mb-4">
+                            <div class="card-header bg-success text-white py-2">
+                                <h6 class="mb-0">
                                     <i class="fas fa-home me-2"></i>
-                                    Selected Accommodation
-                                </h5>
-                                <button type="button" class="btn btn-sm btn-outline-light" id="changeAccommodationBtn">
-                                    <i class="fas fa-sync me-1"></i> Change
-                                </button>
+                                    Selected Room Details
+                                </h6>
                             </div>
                             <div class="card-body p-3">
                                 <div class="row align-items-center">
-                                    <div class="col-md-3">
-                                        <img id="pageAccommodationImage" src="" alt="Accommodation Image" 
-                                             class="img-fluid rounded shadow-sm" style="height: 120px; width: 100%; object-fit: cover;">
+                                    <div class="col-md-2">
+                                        <img id="selectedRoomImage" src="" alt="Room Image" 
+                                             class="img-fluid rounded shadow-sm" style="height: 80px; width: 100%; object-fit: cover;">
                                     </div>
                                     <div class="col-md-6">
-                                        <h5 id="pageAccommodationTitle" class="text-primary mb-2"></h5>
-                                        <p class="text-muted mb-2">
-                                            <i class="fas fa-map-marker-alt me-2"></i>
-                                            <span id="pageAccommodationLocation"></span>
+                                        <h6 id="selectedRoomFullName" class="text-success mb-1"></h6>
+                                        <p class="text-muted mb-1 small">
+                                            <i class="fas fa-map-marker-alt me-1"></i>
+                                            <span id="selectedRoomLocation"></span>
                                         </p>
                                         <div class="d-flex flex-wrap gap-3 text-muted small">
-                                            <span><i class="fas fa-bed me-1"></i> <span id="pageBedrooms">0</span> Bedrooms</span>
-                                            <span><i class="fas fa-bath me-1"></i> <span id="pageBathrooms">0</span> Bathrooms</span>
-                                            <span><i class="fas fa-user me-1"></i> <span id="pageMaxGuests">0</span> Max Guests</span>
-                                            <span><i class="fas fa-ruler-combined me-1"></i> <span id="pageArea">0</span> sq ft</span>
-                                        </div>
-                                        <div class="mt-2">
-                                            <p class="text-muted mb-0 small" id="pageAccommodationDescription"></p>
+                                            <span><i class="fas fa-bed me-1"></i> <span id="selectedRoomBeds">0</span> beds</span>
+                                            <span><i class="fas fa-bath me-1"></i> <span id="selectedRoomBaths">0</span> baths</span>
+                                            <span><i class="fas fa-user me-1"></i> <span id="selectedRoomGuests">0</span> max guests</span>
                                         </div>
                                     </div>
-                                    <div class="col-md-3">
+                                    <div class="col-md-4">
                                         <div class="row text-center">
                                             <div class="col-6">
                                                 <div class="border rounded p-2 bg-light">
-                                                    <h5 class="mb-0 text-success" id="pageAvailableBeds">0</h5>
+                                                    <h5 class="mb-0 text-success" id="selectedAvailableBeds">0</h5>
                                                     <small class="text-muted">Available</small>
                                                 </div>
                                             </div>
                                             <div class="col-6">
                                                 <div class="border rounded p-2 bg-light">
-                                                    <h5 class="mb-0 text-info" id="pageTotalBeds">0</h5>
+                                                    <h5 class="mb-0 text-info" id="selectedTotalBeds">0</h5>
                                                     <small class="text-muted">Total</small>
                                                 </div>
                                             </div>
@@ -139,90 +241,9 @@
                         </div>
 
                         <div class="row g-4">
-                            <!-- Accommodations List -->
-                            <div class="col-lg-5">
-                                <div class="card border-0 shadow-sm h-100">
-                                    <div class="card-header bg-light py-3 d-flex justify-content-between align-items-center">
-                                        <h6 class="mb-0">
-                                            <i class="fas fa-list me-2"></i>
-                                            Available Accommodations
-                                        </h6>
-                                        <span class="badge bg-primary">{{ count($accommodations) }}</span>
-                                    </div>
-                                    <div class="card-body p-0" style="max-height: 600px; overflow-y: auto;">
-                                        @if($accommodations->isEmpty())
-                                            <div class="text-center py-4">
-                                                <i class="fas fa-bed fa-2x text-muted mb-3"></i>
-                                                <p class="text-muted small mb-0">No accommodations available</p>
-                                            </div>
-                                        @else
-                                            <div class="list-group list-group-flush" id="accommodationsList">
-                                                @foreach($accommodations as $accommodation)
-                                                    @php
-                                                        $images = [];
-                                                        if (is_array($accommodation->images)) {
-                                                            $images = $accommodation->images;
-                                                        } else {
-                                                            $decoded = json_decode($accommodation->images, true);
-                                                            if (is_array($decoded)) {
-                                                                $images = $decoded;
-                                                            }
-                                                        }
-                                                        $featuredUrl = count($images) ? $images[0] : asset('images/default-accommodation.jpg');
-                                                        $availabilityClass = $accommodation->available_beds > 0 ? 'border-success' : 'border-danger';
-                                                        $availabilityText = $accommodation->available_beds > 0 ? 'text-success' : 'text-danger';
-                                                        $availabilityIcon = $accommodation->available_beds > 0 ? 'fa-check-circle' : 'fa-times-circle';
-                                                    @endphp
-                                                    <button type="button" 
-                                                            class="list-group-item list-group-item-action accommodation-option p-3"
-                                                            data-id="{{ $accommodation->id }}"
-                                                            data-name="{{ $accommodation->name }}"
-                                                            data-location="{{ $accommodation->location }}"
-                                                            data-bedrooms="{{ $accommodation->bedrooms }}"
-                                                            data-bathrooms="{{ $accommodation->bathrooms }}"
-                                                            data-max-guests="{{ $accommodation->max_guests }}"
-                                                            data-area="{{ $accommodation->area ?? 'N/A' }}"
-                                                            data-total-beds="{{ $accommodation->total_beds }}"
-                                                            data-available-beds="{{ $accommodation->available_beds }}"
-                                                            data-image="{{ $featuredUrl }}"
-                                                            data-description="{{ $accommodation->description }}">
-                                                        <div class="d-flex align-items-center">
-                                                            <div class="position-relative me-3">
-                                                                <img src="{{ $featuredUrl }}" 
-                                                                     alt="{{ $accommodation->name }}"
-                                                                     class="rounded" 
-                                                                     style="width: 70px; height: 50px; object-fit: cover;">
-                                                                <span class="position-absolute top-0 start-100 translate-middle badge {{ $availabilityClass }} border border-2">
-                                                                    {{ $accommodation->available_beds }}
-                                                                </span>
-                                                            </div>
-                                                            <div class="flex-grow-1 text-start">
-                                                                <h6 class="mb-1 fw-bold">{{ Str::limit($accommodation->name, 25) }}</h6>
-                                                                <div class="d-flex align-items-center mb-1">
-                                                                    <i class="fas fa-map-marker-alt text-muted me-1 fa-xs"></i>
-                                                                    <small class="text-muted">{{ Str::limit($accommodation->location, 22) }}</small>
-                                                                </div>
-                                                                <div class="d-flex align-items-center">
-                                                                    <i class="fas {{ $availabilityIcon }} {{ $availabilityText }} me-1 fa-xs"></i>
-                                                                    <small class="{{ $availabilityText }} fw-semibold">
-                                                                        {{ $accommodation->available_beds }}/{{ $accommodation->total_beds }} beds
-                                                                    </small>
-                                                                </div>
-                                                            </div>
-                                                            <i class="fas fa-chevron-right text-muted ms-2"></i>
-                                                        </div>
-                                                    </button>
-                                                @endforeach
-                                            </div>
-                                        @endif
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Booking Form Sections -->
-                            <div class="col-lg-7">
-                                <!-- Military Information Section -->
-                                <div class="card border-0 shadow-sm mb-4">
+                            <!-- Military Information Section -->
+                            <div class="col-12">
+                                <div class="card border-0 shadow-sm">
                                     <div class="card-header bg-light py-3">
                                         <h6 class="mb-0 text-primary d-flex align-items-center">
                                             <i class="fas fa-user-shield me-2"></i>
@@ -340,9 +361,11 @@
                                         </div>
                                     </div>
                                 </div>
+                            </div>
 
-                                <!-- Personal Information Section -->
-                                <div class="card border-0 shadow-sm mb-4">
+                            <!-- Personal Information Section -->
+                            <div class="col-12">
+                                <div class="card border-0 shadow-sm">
                                     <div class="card-header bg-light py-3">
                                         <h6 class="mb-0 text-primary d-flex align-items-center">
                                             <i class="fas fa-user-circle me-2"></i>
@@ -405,9 +428,11 @@
                                         </div>
                                     </div>
                                 </div>
+                            </div>
 
-                                <!-- Booking Details Section -->
-                                <div class="card border-0 shadow-sm mb-4">
+                            <!-- Booking Details Section -->
+                            <div class="col-12">
+                                <div class="card border-0 shadow-sm">
                                     <div class="card-header bg-light py-3">
                                         <h6 class="mb-0 text-primary d-flex align-items-center">
                                             <i class="fas fa-calendar-alt me-2"></i>
@@ -479,7 +504,7 @@
                                                 </label>
                                                 <div class="form-control bg-light border-0">
                                                     <div class="d-flex justify-content-between align-items-center">
-                                                        <span class="fw-semibold text-primary" id="pageNights">0</span>
+                                                        <span class="fw-semibold text-primary" id="nightsCount">0</span>
                                                         <span class="text-muted">nights</span>
                                                     </div>
                                                 </div>
@@ -487,8 +512,10 @@
                                         </div>
                                     </div>
                                 </div>
+                            </div>
 
-                                <!-- Additional Information Section -->
+                            <!-- Additional Information Section -->
+                            <div class="col-12">
                                 <div class="card border-0 shadow-sm">
                                     <div class="card-header bg-light py-3">
                                         <h6 class="mb-0 text-primary">
@@ -534,8 +561,8 @@
                                                 <div class="text-primary mb-2">
                                                     <i class="fas fa-home"></i>
                                                 </div>
-                                                <div class="fw-bold text-dark" id="summaryAccommodation">Not selected</div>
-                                                <small class="text-muted">Accommodation</small>
+                                                <div class="fw-bold text-dark" id="summaryRoom">Not selected</div>
+                                                <small class="text-muted">Room</small>
                                             </div>
                                         </div>
                                         <div class="col-sm-4">
@@ -560,9 +587,9 @@
                                 </div>
                             </div>
                             <div class="col-md-4 text-end">
-                                <button type="submit" class="btn btn-primary btn-lg px-4 w-100 mb-2" id="submitBookingBtn" disabled>
+                                <button type="submit" class="btn btn-success btn-lg px-4 w-100 mb-2" id="submitBookingBtn">
                                     <i class="fas fa-paper-plane me-2"></i> 
-                                    <span class="submit-text">Submit Booking</span>
+                                    <span class="submit-text">Complete Booking</span>
                                     <div class="spinner-border spinner-border-sm ms-2 d-none" role="status">
                                         <span class="visually-hidden">Loading...</span>
                                     </div>
@@ -591,9 +618,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
 class BookingManager {
     constructor() {
-        this.currentAvailableBeds = 0;
-        this.currentTotalBeds = 0;
         this.selectedAccommodation = null;
+        this.currentStep = 1;
         this.elements = {};
     }
 
@@ -601,71 +627,67 @@ class BookingManager {
         this.cacheElements();
         this.bindEvents();
         this.initializeForm();
-        // Removed autoSelectFirstAccommodation - no default selection
     }
 
     cacheElements() {
         this.elements = {
-            accommodationOptions: document.querySelectorAll('.accommodation-option'),
-            selectedAccommodationCard: document.getElementById('selectedAccommodationCard'),
-            selectionAlert: document.getElementById('selectionAlert'),
-            accommodationId: document.getElementById('pageAccommodationId'),
-            accommodationName: document.getElementById('pageAccommodationName'),
-            accommodationSubtitle: document.getElementById('pageAccommodationSubtitle'),
-            accommodationTitle: document.getElementById('pageAccommodationTitle'),
-            accommodationLocation: document.getElementById('pageAccommodationLocation'),
-            accommodationImage: document.getElementById('pageAccommodationImage'),
-            bedrooms: document.getElementById('pageBedrooms'),
-            bathrooms: document.getElementById('pageBathrooms'),
-            maxGuests: document.getElementById('pageMaxGuests'),
-            area: document.getElementById('pageArea'),
-            availableBeds: document.getElementById('pageAvailableBeds'),
-            totalBeds: document.getElementById('pageTotalBeds'),
-            accommodationDescription: document.getElementById('pageAccommodationDescription'),
+            step1Accommodation: document.getElementById('step1Accommodation'),
+            step2BookingForm: document.getElementById('step2BookingForm'),
+            progressBar: document.getElementById('progressBar'),
+            accommodationCards: document.querySelectorAll('.accommodation-card'),
+            selectButtons: document.querySelectorAll('.select-accommodation-btn'),
+            changeRoomBtn: document.getElementById('changeRoomBtn'),
+            
+            // Selected room display elements
+            selectedRoomName: document.getElementById('selectedRoomName'),
+            selectedRoomTitle: document.getElementById('selectedRoomTitle'),
+            selectedRoomImage: document.getElementById('selectedRoomImage'),
+            selectedRoomFullName: document.getElementById('selectedRoomFullName'),
+            selectedRoomLocation: document.getElementById('selectedRoomLocation'),
+            selectedRoomBeds: document.getElementById('selectedRoomBeds'),
+            selectedRoomBaths: document.getElementById('selectedRoomBaths'),
+            selectedRoomGuests: document.getElementById('selectedRoomGuests'),
+            selectedAvailableBeds: document.getElementById('selectedAvailableBeds'),
+            selectedTotalBeds: document.getElementById('selectedTotalBeds'),
+            
+            // Form elements
+            accommodationId: document.getElementById('accommodationId'),
+            accommodationName: document.getElementById('accommodationName'),
             bedsSelect: document.getElementById('number_of_beds'),
             bedsAvailabilityText: document.getElementById('bedsAvailabilityText'),
             checkinInput: document.getElementById('check_in_date'),
             checkoutInput: document.getElementById('check_out_date'),
-            nightsDisplay: document.getElementById('pageNights'),
-            summaryAccommodation: document.getElementById('summaryAccommodation'),
+            nightsCount: document.getElementById('nightsCount'),
+            summaryRoom: document.getElementById('summaryRoom'),
             summaryBeds: document.getElementById('summaryBeds'),
             summaryNights: document.getElementById('summaryNights'),
             submitBtn: document.getElementById('submitBookingBtn'),
             bookingForm: document.getElementById('bookingForm'),
-            changeAccommodationBtn: document.getElementById('changeAccommodationBtn'),
             systemAlerts: document.getElementById('systemAlerts')
         };
     }
 
     bindEvents() {
         // Accommodation selection
-        this.elements.accommodationOptions.forEach(option => {
-            option.addEventListener('click', (e) => {
-                console.log('Accommodation clicked:', option.dataset.name);
-                this.selectAccommodation(option);
+        this.elements.selectButtons.forEach(button => {
+            button.addEventListener('click', (e) => {
+                const card = e.target.closest('.accommodation-card');
+                this.selectAccommodation(card);
             });
         });
 
-        // Date and bed selection events
-        if (this.elements.checkinInput) {
-            this.elements.checkinInput.addEventListener('change', () => this.handleDateChange());
-        }
-        if (this.elements.checkoutInput) {
-            this.elements.checkoutInput.addEventListener('change', () => this.handleDateChange());
-        }
-        if (this.elements.bedsSelect) {
-            this.elements.bedsSelect.addEventListener('change', () => this.updateBookingSummary());
-        }
+        // Change room button
+        this.elements.changeRoomBtn.addEventListener('click', () => {
+            this.showStep1();
+        });
 
-        // Change accommodation button
-        if (this.elements.changeAccommodationBtn) {
-            this.elements.changeAccommodationBtn.addEventListener('click', () => this.showAccommodationSelection());
-        }
+        // Date and bed selection events
+        this.elements.checkinInput.addEventListener('change', () => this.handleDateChange());
+        this.elements.checkoutInput.addEventListener('change', () => this.handleDateChange());
+        this.elements.bedsSelect.addEventListener('change', () => this.updateBookingSummary());
 
         // Form submission
-        if (this.elements.bookingForm) {
-            this.elements.bookingForm.addEventListener('submit', (e) => this.handleFormSubmission(e));
-        }
+        this.elements.bookingForm.addEventListener('submit', (e) => this.handleFormSubmission(e));
 
         // Real-time validation
         this.setupRealTimeValidation();
@@ -676,71 +698,51 @@ class BookingManager {
         this.populateUserData();
     }
 
-    selectAccommodation(option) {
-        console.log('Selecting accommodation:', option.dataset.name);
-        console.log('Available beds:', option.dataset.availableBeds);
+    selectAccommodation(card) {
+        const accommodationData = JSON.parse(card.getAttribute('data-accommodation'));
+        const featuredImage = card.getAttribute('data-featured-image');
         
-        // Remove active class from all options
-        this.elements.accommodationOptions.forEach(opt => {
-            opt.classList.remove('active', 'border-primary');
-        });
-
-        // Add active class to selected option
-        option.classList.add('active', 'border-primary');
-
-        // Get accommodation data
-        const accommodationData = {
-            id: option.dataset.id,
-            name: option.dataset.name,
-            location: option.dataset.location,
-            image: option.dataset.image,
-            bedrooms: option.dataset.bedrooms,
-            bathrooms: option.dataset.bathrooms,
-            maxGuests: option.dataset.maxGuests,
-            area: option.dataset.area,
-            totalBeds: parseInt(option.dataset.totalBeds),
-            availableBeds: parseInt(option.dataset.availableBeds),
-            description: option.dataset.description
-        };
-
         this.selectedAccommodation = accommodationData;
-        this.currentAvailableBeds = accommodationData.availableBeds;
-        this.currentTotalBeds = accommodationData.totalBeds;
 
-        this.updateAccommodationDisplay(accommodationData);
-        this.populateBedsDropdown();
-        this.showSelectedAccommodation();
-        this.updateBookingSummary();
-    }
-
-    updateAccommodationDisplay(data) {
-        this.elements.accommodationId.value = data.id;
-        this.elements.accommodationName.textContent = data.name;
-        this.elements.accommodationSubtitle.textContent = data.name;
-        this.elements.accommodationTitle.textContent = data.name;
-        this.elements.accommodationLocation.textContent = data.location;
-        this.elements.accommodationImage.src = data.image;
-        this.elements.accommodationImage.onerror = function() {
-            this.src = 'https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=80';
-        };
-        this.elements.bedrooms.textContent = data.bedrooms;
-        this.elements.bathrooms.textContent = data.bathrooms;
-        this.elements.maxGuests.textContent = data.maxGuests;
-        this.elements.area.textContent = data.area;
-        this.elements.availableBeds.textContent = data.availableBeds;
-        this.elements.totalBeds.textContent = data.totalBeds;
-        this.elements.accommodationDescription.textContent = data.description;
-        this.elements.summaryAccommodation.textContent = data.name;
-    }
-
-    populateBedsDropdown() {
-        console.log('Populating beds dropdown. Available beds:', this.currentAvailableBeds);
+        // Update selected room display
+        this.updateSelectedRoomDisplay(accommodationData, featuredImage);
         
+        // Populate beds dropdown based on available beds
+        this.populateBedsDropdown(accommodationData.available_beds);
+        
+        // Show step 2
+        this.showStep2();
+        
+        // Update progress bar
+        this.updateProgressBar(66);
+    }
+
+    updateSelectedRoomDisplay(data, image) {
+        this.elements.selectedRoomName.textContent = data.name;
+        this.elements.selectedRoomTitle.textContent = `Selected Room: ${data.name}`;
+        this.elements.selectedRoomImage.src = image;
+        this.elements.selectedRoomFullName.textContent = data.name;
+        this.elements.selectedRoomLocation.textContent = data.location;
+        this.elements.selectedRoomBeds.textContent = data.bedrooms;
+        this.elements.selectedRoomBaths.textContent = data.bathrooms;
+        this.elements.selectedRoomGuests.textContent = data.max_guests;
+        this.elements.selectedAvailableBeds.textContent = data.available_beds;
+        this.elements.selectedTotalBeds.textContent = data.total_beds;
+        
+        // Update form hidden fields
+        this.elements.accommodationId.value = data.id;
+        this.elements.accommodationName.value = data.name;
+        
+        // Update summary
+        this.elements.summaryRoom.textContent = data.name;
+    }
+
+    populateBedsDropdown(availableBeds) {
         const bedsSelect = this.elements.bedsSelect;
         bedsSelect.innerHTML = '<option value="">Select number of beds</option>';
 
-        if (this.currentAvailableBeds > 0) {
-            const maxBeds = Math.min(this.currentAvailableBeds, 10);
+        if (availableBeds > 0) {
+            const maxBeds = Math.min(availableBeds, 10);
             for (let i = 1; i <= maxBeds; i++) {
                 const option = document.createElement('option');
                 option.value = i;
@@ -749,11 +751,10 @@ class BookingManager {
             }
             bedsSelect.disabled = false;
 
-            // Update availability text
             this.elements.bedsAvailabilityText.innerHTML = `
                 <small class="text-success">
                     <i class="fas fa-check-circle me-1"></i>
-                    ${this.currentAvailableBeds} bed${this.currentAvailableBeds > 1 ? 's' : ''} available
+                    ${availableBeds} bed${availableBeds > 1 ? 's' : ''} available
                 </small>
             `;
         } else {
@@ -765,38 +766,25 @@ class BookingManager {
                 </small>
             `;
         }
-
-        // Force UI update
-        bedsSelect.dispatchEvent(new Event('change'));
     }
 
-    showSelectedAccommodation() {
-        this.elements.selectedAccommodationCard.style.display = 'block';
-        this.elements.selectionAlert.style.display = 'none';
-        this.updateSubmitButtonState();
+    showStep1() {
+        this.elements.step1Accommodation.classList.remove('d-none');
+        this.elements.step2BookingForm.classList.add('d-none');
+        this.currentStep = 1;
+        this.updateProgressBar(25);
     }
 
-    showAccommodationSelection() {
-        this.elements.selectedAccommodationCard.style.display = 'none';
-        this.elements.selectionAlert.style.display = 'block';
-        this.disableSubmitButton();
-        
-        // Reset beds dropdown
-        this.elements.bedsSelect.innerHTML = '<option value="">Select number of beds</option>';
-        this.elements.bedsSelect.disabled = true;
-        this.elements.bedsAvailabilityText.innerHTML = `
-            <small class="text-muted">
-                <i class="fas fa-info-circle me-1"></i>
-                Please select an accommodation first
-            </small>
-        `;
-        
-        // Remove active class from all options
-        this.elements.accommodationOptions.forEach(opt => {
-            opt.classList.remove('active', 'border-primary');
-        });
-        
-        this.selectedAccommodation = null;
+    showStep2() {
+        this.elements.step1Accommodation.classList.add('d-none');
+        this.elements.step2BookingForm.classList.remove('d-none');
+        this.currentStep = 2;
+        this.updateProgressBar(66);
+        this.updateBookingSummary();
+    }
+
+    updateProgressBar(percentage) {
+        this.elements.progressBar.style.width = `${percentage}%`;
     }
 
     handleDateChange() {
@@ -823,11 +811,9 @@ class BookingManager {
             nights = Math.ceil((checkout - checkin) / (1000 * 60 * 60 * 24));
         }
 
-        this.elements.nightsDisplay.textContent = nights;
+        this.elements.nightsCount.textContent = nights;
         this.elements.summaryNights.textContent = nights;
         this.elements.summaryBeds.textContent = beds;
-
-        this.updateSubmitButtonState();
     }
 
     setDefaultDates() {
@@ -836,14 +822,10 @@ class BookingManager {
         tomorrow.setDate(tomorrow.getDate() + 1);
         const tomorrowStr = tomorrow.toISOString().split('T')[0];
 
-        if (this.elements.checkinInput) {
-            this.elements.checkinInput.value = today;
-            this.elements.checkinInput.min = today;
-        }
-        if (this.elements.checkoutInput) {
-            this.elements.checkoutInput.value = tomorrowStr;
-            this.elements.checkoutInput.min = tomorrowStr;
-        }
+        this.elements.checkinInput.value = today;
+        this.elements.checkinInput.min = today;
+        this.elements.checkoutInput.value = tomorrowStr;
+        this.elements.checkoutInput.min = tomorrowStr;
     }
 
     populateUserData() {
@@ -876,7 +858,6 @@ class BookingManager {
             field.addEventListener('blur', () => this.validateField(field));
             field.addEventListener('input', () => {
                 this.clearFieldError(field);
-                this.updateSubmitButtonState();
             });
         });
     }
@@ -924,40 +905,6 @@ class BookingManager {
         }
     }
 
-    updateSubmitButtonState() {
-        const isAccommodationSelected = this.selectedAccommodation !== null;
-        const areDatesValid = this.elements.checkinInput.value && this.elements.checkoutInput.value;
-        const areBedsSelected = this.elements.bedsSelect.value && this.elements.bedsSelect.value > 0;
-        
-        const requiredFields = [
-            'service_number', 'rank', 'unit', 'branch', 'purpose',
-            'guest_name', 'guest_phone', 'guest_email'
-        ];
-
-        const allRequiredFieldsFilled = requiredFields.every(fieldId => {
-            const field = document.getElementById(fieldId);
-            return field && field.value.trim();
-        });
-
-        if (isAccommodationSelected && areDatesValid && areBedsSelected && allRequiredFieldsFilled) {
-            this.enableSubmitButton();
-        } else {
-            this.disableSubmitButton();
-        }
-    }
-
-    enableSubmitButton() {
-        this.elements.submitBtn.disabled = false;
-        this.elements.submitBtn.classList.remove('btn-secondary');
-        this.elements.submitBtn.classList.add('btn-primary');
-    }
-
-    disableSubmitButton() {
-        this.elements.submitBtn.disabled = true;
-        this.elements.submitBtn.classList.remove('btn-primary');
-        this.elements.submitBtn.classList.add('btn-secondary');
-    }
-
     async handleFormSubmission(e) {
         e.preventDefault();
 
@@ -979,6 +926,12 @@ class BookingManager {
             isValid = false;
         }
 
+        // Validate beds selection
+        if (!this.elements.bedsSelect.value || parseInt(this.elements.bedsSelect.value) < 1) {
+            this.showAlert('Please select the number of beds', 'danger');
+            isValid = false;
+        }
+
         if (!isValid) {
             this.showAlert('Please fix the errors in the form before submitting.', 'danger');
             return;
@@ -988,10 +941,7 @@ class BookingManager {
         this.setSubmitButtonLoading(true);
 
         try {
-            // Simulate API call delay
-            await new Promise(resolve => setTimeout(resolve, 2000));
-            
-            // If we get here, form is valid - submit it
+            // Submit the form
             this.elements.bookingForm.submit();
         } catch (error) {
             this.showAlert('An error occurred while processing your request. Please try again.', 'danger');
@@ -1008,9 +958,9 @@ class BookingManager {
             spinner.classList.remove('d-none');
             this.elements.submitBtn.disabled = true;
         } else {
-            submitText.textContent = 'Submit Booking';
+            submitText.textContent = 'Complete Booking';
             spinner.classList.add('d-none');
-            this.updateSubmitButtonState();
+            this.elements.submitBtn.disabled = false;
         }
     }
 
@@ -1039,22 +989,16 @@ class BookingManager {
     transition: all 0.3s ease;
 }
 
-.accommodation-option {
+.accommodation-card {
     border: 2px solid transparent;
     transition: all 0.3s ease;
     cursor: pointer;
 }
 
-.accommodation-option:hover {
-    border-color: #e9ecef;
-    background-color: #f8f9fa;
-    transform: translateY(-1px);
-}
-
-.accommodation-option.active {
-    border-color: #0d6efd !important;
-    background-color: #f0f8ff;
-    box-shadow: 0 2px 8px rgba(13, 110, 253, 0.15);
+.accommodation-card:hover {
+    border-color: #0d6efd;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(13, 110, 253, 0.15);
 }
 
 .card {
@@ -1067,17 +1011,15 @@ class BookingManager {
     border-radius: 12px 12px 0 0 !important;
 }
 
-.list-group-item {
-    border: none;
-    padding: 1rem;
-}
-
-.list-group-item:not(:last-child) {
-    border-bottom: 1px solid #e9ecef !important;
-}
-
 .btn-primary {
     background: linear-gradient(135deg, #0d6efd, #0a58ca);
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+}
+
+.btn-success {
+    background: linear-gradient(135deg, #198754, #146c43);
     border: none;
     border-radius: 8px;
     font-weight: 600;
@@ -1086,6 +1028,11 @@ class BookingManager {
 .btn-primary:hover:not(:disabled) {
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(13, 110, 253, 0.3);
+}
+
+.btn-success:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(25, 135, 84, 0.3);
 }
 
 .form-control, .form-select {
@@ -1107,7 +1054,7 @@ class BookingManager {
     background: linear-gradient(135deg, #f8f9fa, #e9ecef);
     padding: 1.5rem;
     border-radius: 12px;
-    border-left: 4px solid #0d6efd;
+    border-left: 4px solid #198754;
 }
 
 .progress-bar-animated {
@@ -1119,24 +1066,6 @@ class BookingManager {
     100% { background-position: 0 0; }
 }
 
-/* Custom scrollbar */
-.card-body::-webkit-scrollbar {
-    width: 6px;
-}
-
-.card-body::-webkit-scrollbar-track {
-    background: #f1f1f1;
-}
-
-.card-body::-webkit-scrollbar-thumb {
-    background: #c1c1c1;
-    border-radius: 3px;
-}
-
-.card-body::-webkit-scrollbar-thumb:hover {
-    background: #a8a8a8;
-}
-
 @media (max-width: 768px) {
     .container-fluid {
         padding: 1rem;
@@ -1144,6 +1073,10 @@ class BookingManager {
     
     .card-body {
         padding: 1rem;
+    }
+    
+    .accommodation-features .col-4 {
+        margin-bottom: 0.5rem;
     }
 }
 </style>

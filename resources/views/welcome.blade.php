@@ -1100,26 +1100,45 @@ document.addEventListener('DOMContentLoaded', function() {
             const btn = e.target.closest('.book-now-btn');
             e.preventDefault();
             
+            console.log('Book now button clicked', btn.dataset);
+            
             currentAccommodationId = btn.dataset.accommodationId;
             const accommodationName = btn.dataset.accommodationName || '';
             currentAvailableBeds = parseInt(btn.dataset.availableBeds) || 0;
             currentTotalBeds = parseInt(btn.dataset.totalBeds) || 0;
 
+            console.log('Available beds:', currentAvailableBeds, 'Total beds:', currentTotalBeds);
+
+            // Set accommodation info in modal
             qs('#modalAccommodationId').value = currentAccommodationId;
             qs('#modalAccommodationName').textContent = accommodationName;
             qs('#modalAccommodationInfo').textContent = accommodationName;
             qs('#modalAvailableBeds').textContent = currentAvailableBeds;
             qs('#modalTotalBeds').textContent = currentTotalBeds;
 
-            // Populate beds dropdown
+            // Populate beds dropdown - FIXED VERSION
             const bedsSelect = qs('#number_of_beds');
             if (bedsSelect) {
-                bedsSelect.innerHTML = '<option value="">Select beds</option>';
-                for (let i = 1; i <= currentAvailableBeds; i++) {
+                bedsSelect.innerHTML = '<option value="">Select number of beds</option>';
+                
+                if (currentAvailableBeds > 0) {
+                    // Create options from 1 up to available beds (max 10)
+                    const maxBeds = Math.min(currentAvailableBeds, 10);
+                    for (let i = 1; i <= maxBeds; i++) {
+                        const option = document.createElement('option');
+                        option.value = i;
+                        option.textContent = `${i} Bed${i > 1 ? 's' : ''}`;
+                        bedsSelect.appendChild(option);
+                    }
+                    bedsSelect.disabled = false;
+                } else {
+                    // No beds available
                     const option = document.createElement('option');
-                    option.value = i;
-                    option.textContent = i + ' Bed' + (i > 1 ? 's' : '');
+                    option.value = "";
+                    option.textContent = "No beds available";
+                    option.disabled = true;
                     bedsSelect.appendChild(option);
+                    bedsSelect.disabled = true;
                 }
             }
 
@@ -1127,10 +1146,10 @@ document.addEventListener('DOMContentLoaded', function() {
             const availabilityText = qs('#bedsAvailabilityText');
             if (availabilityText) {
                 if (currentAvailableBeds > 0) {
-                    availabilityText.textContent = `You can book up to ${currentAvailableBeds} bed${currentAvailableBeds > 1 ? 's' : ''}`;
+                    availabilityText.innerHTML = `<i class="fas fa-check-circle me-1 text-success"></i> ${currentAvailableBeds} bed${currentAvailableBeds > 1 ? 's' : ''} available for booking`;
                     availabilityText.className = 'form-text text-success';
                 } else {
-                    availabilityText.textContent = 'No beds available for booking';
+                    availabilityText.innerHTML = `<i class="fas fa-times-circle me-1 text-danger"></i> No beds available for booking`;
                     availabilityText.className = 'form-text text-danger';
                 }
             }
@@ -1149,6 +1168,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 qs('#check_out_date').value = tomorrowStr;
                 qs('#check_out_date').min = tomorrowStr;
             }
+
+            // Update nights display
+            updateNightsDisplay();
 
             // Auto-fill user data if logged in
             @if(auth()->check())
@@ -1191,7 +1213,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             @endif
 
-            // ENABLE SUBMIT BUTTON BY DEFAULT - Remove strict validation on modal open
+            // ENABLE SUBMIT BUTTON BY DEFAULT
             if (qs('#submitBookingBtn')) {
                 qs('#submitBookingBtn').disabled = false;
             }
@@ -1368,45 +1390,43 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+    // Update nights display when dates change
+    function updateNightsDisplay() {
+        const checkinInput = qs('#check_in_date');
+        const checkoutInput = qs('#check_out_date');
+        const nightsDisplay = qs('#modalNights');
+        const nightsSummary = qs('#modalNightsSummary');
+        const bedsCount = qs('#modalBedsCount');
+        const bedsSelect = qs('#number_of_beds');
+
+        if (checkinInput && checkoutInput && nightsDisplay && nightsSummary) {
+            const checkin = new Date(checkinInput.value);
+            const checkout = new Date(checkoutInput.value);
+            
+            if (checkin && checkout && checkout > checkin) {
+                const nights = Math.ceil((checkout - checkin) / (1000 * 60 * 60 * 24));
+                nightsDisplay.textContent = nights;
+                nightsSummary.textContent = nights;
+            } else {
+                nightsDisplay.textContent = '0';
+                nightsSummary.textContent = '0';
+            }
+        }
+
+        // Update beds count in summary
+        if (bedsCount && bedsSelect && bedsSelect.value) {
+            bedsCount.textContent = bedsSelect.value;
+        } else if (bedsCount) {
+            bedsCount.textContent = '0';
+        }
+    }
+
+    // Set up event listeners for form fields
     const checkinInput = qs('#check_in_date');
     const checkoutInput = qs('#check_out_date');
     const bedsSelect = qs('#number_of_beds');
 
-    // SIMPLIFIED FORM VALIDATION - Only validate on submit, not real-time
-    function validateFormOnSubmit() {
-        const requiredFields = [
-            'service_number', 'rank', 'unit', 'branch', 
-            'guest_name', 'guest_phone', 'guest_email',
-            'number_of_beds', 'check_in_date', 'check_out_date', 'purpose'
-        ];
-        
-        let isValid = true;
-        let errorMessages = [];
-        
-        requiredFields.forEach(fieldId => {
-            const field = qs(`#${fieldId}`);
-            if (field && !field.value.trim()) {
-                isValid = false;
-                const fieldName = field.labels?.[0]?.textContent?.replace('*', '')?.trim() || fieldId;
-                errorMessages.push(`${fieldName} is required`);
-            }
-        });
-        
-        // Additional validation for dates
-        if (checkinInput && checkoutInput && checkinInput.value && checkoutInput.value) {
-            const checkin = new Date(checkinInput.value);
-            const checkout = new Date(checkoutInput.value);
-            if (checkout <= checkin) {
-                isValid = false;
-                errorMessages.push('Check-out date must be after check-in date');
-            }
-        }
-        
-        return { isValid, errorMessages };
-    }
-
-    // Set up event listeners for form fields
-    if (checkinInput && checkoutInput && bedsSelect) {
+    if (checkinInput && checkoutInput) {
         checkinInput.addEventListener('change', function() {
             if (this.value) {
                 const nextDay = new Date(this.value);
@@ -1418,7 +1438,14 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 }
             }
+            updateNightsDisplay();
         });
+
+        checkoutInput.addEventListener('change', updateNightsDisplay);
+    }
+
+    if (bedsSelect) {
+        bedsSelect.addEventListener('change', updateNightsDisplay);
     }
 
     // Form submit validation - ONLY validate when form is submitted
@@ -1464,6 +1491,38 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
         });
+    }
+
+    function validateFormOnSubmit() {
+        const requiredFields = [
+            'service_number', 'rank', 'unit', 'branch', 
+            'guest_name', 'guest_phone', 'guest_email',
+            'number_of_beds', 'check_in_date', 'check_out_date', 'purpose'
+        ];
+        
+        let isValid = true;
+        let errorMessages = [];
+        
+        requiredFields.forEach(fieldId => {
+            const field = qs(`#${fieldId}`);
+            if (field && !field.value.trim()) {
+                isValid = false;
+                const fieldName = field.labels?.[0]?.textContent?.replace('*', '')?.trim() || fieldId;
+                errorMessages.push(`${fieldName} is required`);
+            }
+        });
+        
+        // Additional validation for dates
+        if (checkinInput && checkoutInput && checkinInput.value && checkoutInput.value) {
+            const checkin = new Date(checkinInput.value);
+            const checkout = new Date(checkoutInput.value);
+            if (checkout <= checkin) {
+                isValid = false;
+                errorMessages.push('Check-out date must be after check-in date');
+            }
+        }
+        
+        return { isValid, errorMessages };
     }
 
     // Helper function to escape HTML
@@ -1532,6 +1591,12 @@ document.addEventListener('DOMContentLoaded', function() {
         cursor: pointer;
         z-index: 10;
         position: relative;
+    }
+
+    /* Style for beds dropdown */
+    #number_of_beds:disabled {
+        background-color: #e9ecef;
+        opacity: 0.7;
     }
 </style>
 @endsection

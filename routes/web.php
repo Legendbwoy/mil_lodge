@@ -50,6 +50,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
     // Dashboard
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
 
+    // Analytics Routes
+    Route::get('/analytics', [AdminController::class, 'analytics'])->name('analytics');
+    Route::get('/analytics/export', [AdminController::class, 'exportAnalytics'])->name('analytics.export');
+
     // Notification routes
     Route::get('/notifications', [AdminController::class, 'getNotifications'])->name('notifications');
     Route::post('/notifications/mark-read', [AdminController::class, 'markNotificationsAsRead'])->name('notifications.mark-read');
@@ -62,7 +66,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
     
     // Booking AJAX endpoints
     Route::get('/bookings/{id}/details', [AdminController::class, 'getBookingDetails'])->name('bookings.details');
-    Route::post('/bookings/{id}/quick-status-update', [AdminController::class, 'updateBookingStatus'])->name('bookings.quick-status-update');
+    Route::post('/bookings/{id}/quick-status-update', [AdminController::class, 'quickStatusUpdate'])->name('bookings.quick-status-update');
 
     // Accommodations
     Route::resource('accommodations', AdminAccommodationController::class);
@@ -74,14 +78,14 @@ Route::prefix('admin')->name('admin.')->group(function () {
         ->name('accommodations.remove-image');
 
     // Reports Management
-    Route::get('/reports', [AdminController::class, 'index'])->name('reports');
+    Route::get('/reports', [AdminController::class, 'reports'])->name('reports');
     
     // Reports AJAX endpoints
     Route::get('/reports/{id}/details', [AdminController::class, 'getReportDetails'])->name('reports.details');
     Route::post('/reports/{id}/update-status', [AdminController::class, 'updateReportStatus'])->name('reports.update-status');
 
-    // Finance
-    Route::get('/finance', [AdminController::class, 'finance'])->name('finance');
+    // Auto checkout
+    Route::post('/auto-checkout', [AdminController::class, 'autoCheckoutOverdueBookings'])->name('auto-checkout');
 });
 
 /*

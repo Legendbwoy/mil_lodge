@@ -30,74 +30,74 @@
         @endif
 
         {{-- Quick Stats Cards --}}
-<div class="row mb-4">
-    <div class="col-xl-3 col-md-6">
-        <div class="card bg-primary text-white">
-            <div class="card-body">
-                <div class="d-flex align-items-center">
-                    <div class="flex-grow-1">
-                        <h4 class="mb-0">{{ $bookings->total() }}</h4>
-                        <span>Total Bookings</span>
+        <div class="row mb-4">
+            <div class="col-xl-3 col-md-6">
+                <div class="card bg-primary text-white">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <div class="flex-grow-1">
+                                <h4 class="mb-0">{{ $totalBookings ?? $bookings->total() }}</h4>
+                                <span>Total Bookings</span>
+                            </div>
+                            <div class="flex-shrink-0">
+                                <i class="feather icon-calendar display-4 opacity-50"></i>
+                            </div>
+                        </div>
                     </div>
-                    <div class="flex-shrink-0">
-                        <i class="feather icon-calendar display-4 opacity-50"></i>
+                </div>
+            </div>
+            <div class="col-xl-3 col-md-6">
+                <div class="card bg-success text-white">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <div class="flex-grow-1">
+                                <h4 class="mb-0">{{ $activeBookingsCount ?? $bookings->whereIn('status', ['confirmed', 'checked_in'])->count() }}</h4>
+                                <span>Active Bookings</span>
+                            </div>
+                            <div class="flex-shrink-0">
+                                <i class="feather icon-user-check display-4 opacity-50"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-md-6">
+                <div class="card bg-warning text-white">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <div class="flex-grow-1">
+                                <h4 class="mb-0">{{ $pendingBookingsCount ?? $bookings->where('status', 'pending')->count() }}</h4>
+                                <span>Pending Approval</span>
+                            </div>
+                            <div class="flex-shrink-0">
+                                <i class="feather icon-clock display-4 opacity-50"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-md-6">
+                <div class="card bg-info text-white">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <div class="flex-grow-1">
+                                @php
+                                    $checkingOutToday = $checkingOutTodayCount ?? $bookings->filter(function($booking) {
+                                        return $booking->check_out_date->isToday() && 
+                                               in_array($booking->status, ['confirmed', 'checked_in']);
+                                    })->count();
+                                @endphp
+                                <h4 class="mb-0">{{ $checkingOutToday }}</h4>
+                                <span>Checking Out Today</span>
+                            </div>
+                            <div class="flex-shrink-0">
+                                <i class="feather icon-log-out display-4 opacity-50"></i>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-    <div class="col-xl-3 col-md-6">
-        <div class="card bg-success text-white">
-            <div class="card-body">
-                <div class="d-flex align-items-center">
-                    <div class="flex-grow-1">
-                        <h4 class="mb-0">{{ $bookings->whereIn('status', ['confirmed', 'checked_in'])->count() }}</h4>
-                        <span>Active Bookings</span>
-                    </div>
-                    <div class="flex-shrink-0">
-                        <i class="feather icon-user-check display-4 opacity-50"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-xl-3 col-md-6">
-        <div class="card bg-warning text-white">
-            <div class="card-body">
-                <div class="d-flex align-items-center">
-                    <div class="flex-grow-1">
-                        <h4 class="mb-0">{{ $bookings->where('status', 'pending')->count() }}</h4>
-                        <span>Pending Approval</span>
-                    </div>
-                    <div class="flex-shrink-0">
-                        <i class="feather icon-clock display-4 opacity-50"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-xl-3 col-md-6">
-        <div class="card bg-info text-white">
-            <div class="card-body">
-                <div class="d-flex align-items-center">
-                    <div class="flex-grow-1">
-                        @php
-                            $checkingOutToday = $bookings->filter(function($booking) {
-                                return $booking->check_out_date->isToday() && 
-                                       in_array($booking->status, ['confirmed', 'checked_in']);
-                            })->count();
-                        @endphp
-                        <h4 class="mb-0">{{ $checkingOutToday }}</h4>
-                        <span>Checking Out Today</span>
-                    </div>
-                    <div class="flex-shrink-0">
-                        <i class="feather icon-log-out display-4 opacity-50"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
 
         <div class="row">
             <div class="col-12">
@@ -113,6 +113,7 @@
                                 <li><a class="dropdown-item" href="{{ request()->fullUrlWithQuery(['status' => 'pending']) }}">Pending</a></li>
                                 <li><a class="dropdown-item" href="{{ request()->fullUrlWithQuery(['status' => 'confirmed']) }}">Confirmed</a></li>
                                 <li><a class="dropdown-item" href="{{ request()->fullUrlWithQuery(['status' => 'checked_in']) }}">Checked In</a></li>
+                                <li><a class="dropdown-item" href="{{ request()->fullUrlWithQuery(['status' => 'checked_out']) }}">Checked Out</a></li>
                                 <li><a class="dropdown-item" href="{{ request()->fullUrlWithQuery(['status' => 'cancelled']) }}">Cancelled</a></li>
                             </ul>
                             <a href="{{ route('admin.bookings.create') }}" class="btn btn-primary btn-sm ms-2">
@@ -138,10 +139,10 @@
                                 </thead>
                                 <tbody>
                                     @forelse($bookings as $booking)
-                                        <tr class="{{ $booking->check_out_date->isToday() ? 'table-warning' : '' }} {{ $booking->check_out_date->isPast() ? 'table-danger' : '' }}">
+                                        <tr class="{{ $booking->check_out_date->isToday() && in_array($booking->status, ['confirmed', 'checked_in']) ? 'table-warning' : '' }} {{ $booking->check_out_date->isPast() && in_array($booking->status, ['confirmed', 'checked_in']) ? 'table-danger' : '' }}">
                                             <td>
                                                 <strong>#{{ $booking->id }}</strong>
-                                                @if($booking->check_out_date->isToday())
+                                                @if($booking->check_out_date->isToday() && in_array($booking->status, ['confirmed', 'checked_in']))
                                                     <span class="badge bg-warning ms-1" title="Checking out today">Today</span>
                                                 @endif
                                             </td>
@@ -216,7 +217,7 @@
                                             </td>
                                             <td>
                                                 <span class="badge badge-{{ $booking->status_badge }}">
-                                                    <i class="feather icon-{{ $booking->status === 'checked_in' ? 'user-check' : ($booking->status === 'confirmed' ? 'check-circle' : ($booking->status === 'pending' ? 'clock' : 'x-circle')) }} me-1"></i>
+                                                    <i class="feather icon-{{ $booking->status === 'checked_in' ? 'user-check' : ($booking->status === 'confirmed' ? 'check-circle' : ($booking->status === 'pending' ? 'clock' : ($booking->status === 'checked_out' ? 'log-out' : 'x-circle'))) }} me-1"></i>
                                                     {{ ucfirst($booking->status) }}
                                                 </span>
                                                 @if($booking->status === 'checked_in')
@@ -257,6 +258,11 @@
                                                             <li>
                                                                 <a class="dropdown-item quick-status-update" href="#" data-booking-id="{{ $booking->id }}" data-status="checked_in">
                                                                     <span class="badge badge-info me-1">●</span>Mark as Checked In
+                                                                </a>
+                                                            </li>
+                                                            <li>
+                                                                <a class="dropdown-item quick-status-update" href="#" data-booking-id="{{ $booking->id }}" data-status="checked_out">
+                                                                    <span class="badge badge-secondary me-1">●</span>Mark as Checked Out
                                                                 </a>
                                                             </li>
                                                             <li>
@@ -322,33 +328,39 @@
                         <p><strong>Name:</strong> <span id="modalGuestName"></span></p>
                         <p><strong>Email:</strong> <span id="modalGuestEmail"></span></p>
                         <p><strong>Phone:</strong> <span id="modalGuestPhone"></span></p>
+                        <p><strong>Service Number:</strong> <span id="modalServiceNumber"></span></p>
+                        <p><strong>Rank:</strong> <span id="modalRank"></span></p>
+                        <p><strong>Unit:</strong> <span id="modalUnit"></span></p>
+                        <p><strong>Branch:</strong> <span id="modalBranch"></span></p>
                     </div>
                     <div class="col-md-6">
                         <h6 class="border-bottom pb-2">Booking Information</h6>
                         <p><strong>Status:</strong> <span id="modalStatus" class="badge"></span></p>
+                        <p><strong>Beds:</strong> <span id="modalBedsBooked"></span></p>
                         <p><strong>Check-in:</strong> <span id="modalCheckIn"></span></p>
                         <p><strong>Check-out:</strong> <span id="modalCheckOut"></span></p>
+                        <p><strong>Actual Check-in:</strong> <span id="modalActualCheckIn"></span></p>
+                        <p><strong>Actual Check-out:</strong> <span id="modalActualCheckOut"></span></p>
                         <p><strong>Nights:</strong> <span id="modalNights"></span></p>
                         <p><strong>Time Left:</strong> <span id="modalTimeLeft" class="badge"></span></p>
                     </div>
                 </div>
 
                 <div class="row mt-3">
-                    <div class="col-12">
+                    <div class="col-md-6">
                         <h6 class="border-bottom pb-2">Accommodation Details</h6>
                         <p><strong>Property:</strong> <span id="modalAccommodation"></span></p>
+                        <p><strong>Lodge:</strong> <span id="modalLodge"></span></p>
                         <p><strong>Type:</strong> <span id="modalAccommodationType"></span></p>
                         <p><strong>Location:</strong> <span id="modalLocation"></span></p>
-                        <p><strong>Beds:</strong> <span id="modalBeds"></span></p>
+                        <p><strong>Beds Available:</strong> <span id="modalAvailableBeds"></span></p>
                     </div>
-                </div>
-
-                <div class="row mt-3">
-                    <div class="col-12">
+                    <div class="col-md-6">
                         <h6 class="border-bottom pb-2">Payment Details</h6>
                         <p><strong>Total Amount:</strong> GH¢<span id="modalTotalAmount"></span></p>
                         <p><strong>Payment Status:</strong> <span id="modalPaymentStatus" class="badge"></span></p>
                         <p><strong>Payment Method:</strong> <span id="modalPaymentMethod"></span></p>
+                        <p><strong>Purpose:</strong> <span id="modalPurpose"></span></p>
                         <p><strong>Booked On:</strong> <span id="modalCreatedAt"></span></p>
                     </div>
                 </div>
@@ -386,6 +398,11 @@
                             </a>
                         </li>
                         <li>
+                            <a class="dropdown-item modal-quick-status-update" href="#" data-status="checked_out">
+                                <span class="badge badge-secondary me-1">●</span>Mark as Checked Out
+                            </a>
+                        </li>
+                        <li>
                             <a class="dropdown-item modal-quick-status-update" href="#" data-status="cancelled">
                                 <span class="badge badge-danger me-1">●</span>Mark as Cancelled
                             </a>
@@ -409,6 +426,9 @@
     @method('DELETE')
 </form>
 
+{{-- Toast Container --}}
+<div id="toast-container" class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 9999"></div>
+
 {{-- ===== Bootstrap JS ===== --}}
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
@@ -422,6 +442,9 @@ document.addEventListener('DOMContentLoaded', function () {
     // Modal functionality
     const bookingModal = new bootstrap.Modal(document.getElementById('bookingDetailsModal'));
     
+    // Store current booking ID for modal updates
+    let currentBookingId = null;
+
     // Add click event listeners to all view buttons
     document.querySelectorAll('.btn-view-booking').forEach(button => {
         button.addEventListener('click', function(e) {
@@ -438,32 +461,46 @@ document.addEventListener('DOMContentLoaded', function () {
         
         // Fetch booking details via AJAX
         fetch(`/admin/bookings/${bookingId}/details`)
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
             .then(data => {
                 if (data.success) {
                     populateModal(data.booking);
+                    currentBookingId = bookingId;
                     bookingModal.show();
                 } else {
-                    alert('Error loading booking details');
+                    showToast('Error', data.message || 'Failed to load booking details', 'error');
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('Error loading booking details');
+                showToast('Error', 'Error loading booking details', 'error');
             });
     }
 
     function populateModal(booking) {
         // Basic booking info
         document.getElementById('modalBookingId').textContent = booking.id;
-        document.getElementById('modalGuestName').textContent = booking.guest_name;
-        document.getElementById('modalGuestEmail').textContent = booking.guest_email;
+        document.getElementById('modalGuestName').textContent = booking.guest_name || 'N/A';
+        document.getElementById('modalGuestEmail').textContent = booking.guest_email || 'N/A';
         document.getElementById('modalGuestPhone').textContent = booking.guest_phone || 'N/A';
+        document.getElementById('modalServiceNumber').textContent = booking.service_number || 'N/A';
+        document.getElementById('modalRank').textContent = booking.rank || 'N/A';
+        document.getElementById('modalUnit').textContent = booking.unit || 'N/A';
+        document.getElementById('modalBranch').textContent = booking.branch || 'N/A';
+        document.getElementById('modalPurpose').textContent = booking.purpose || 'N/A';
         
         // Dates
         document.getElementById('modalCheckIn').textContent = formatDate(booking.check_in_date);
         document.getElementById('modalCheckOut').textContent = formatDate(booking.check_out_date);
+        document.getElementById('modalActualCheckIn').textContent = booking.actual_check_in ? formatDate(booking.actual_check_in) : 'Not checked in yet';
+        document.getElementById('modalActualCheckOut').textContent = booking.actual_check_out ? formatDate(booking.actual_check_out) : 'Not checked out yet';
         document.getElementById('modalNights').textContent = calculateNights(booking.check_in_date, booking.check_out_date);
+        document.getElementById('modalBedsBooked').textContent = booking.number_of_beds || 'N/A';
         
         // Time left calculation
         const timeLeftBadge = document.getElementById('modalTimeLeft');
@@ -492,17 +529,19 @@ document.addEventListener('DOMContentLoaded', function () {
         
         // Status with badge
         const statusBadge = document.getElementById('modalStatus');
-        statusBadge.textContent = booking.status.charAt(0).toUpperCase() + booking.status.slice(1);
+        statusBadge.textContent = booking.status ? booking.status.charAt(0).toUpperCase() + booking.status.slice(1) : 'N/A';
         statusBadge.className = `badge badge-${getStatusBadgeClass(booking.status)}`;
         
         // Accommodation details
         document.getElementById('modalAccommodation').textContent = booking.accommodation?.name || 'N/A';
+        document.getElementById('modalLodge').textContent = booking.accommodation?.lodge_name || 'N/A';
         document.getElementById('modalAccommodationType').textContent = booking.accommodation?.type || 'N/A';
         document.getElementById('modalLocation').textContent = booking.accommodation?.location || 'N/A';
-        document.getElementById('modalBeds').textContent = booking.number_of_beds || 'N/A';
+        document.getElementById('modalAvailableBeds').textContent = booking.accommodation ? 
+            `${booking.accommodation.available_beds}/${booking.accommodation.total_beds}` : 'N/A';
         
         // Payment info
-        document.getElementById('modalTotalAmount').textContent = parseFloat(booking.total_amount).toFixed(2);
+        document.getElementById('modalTotalAmount').textContent = parseFloat(booking.total_amount || 0).toFixed(2);
         document.getElementById('modalPaymentStatus').textContent = booking.payment_status || 'N/A';
         document.getElementById('modalPaymentStatus').className = `badge badge-${getPaymentStatusBadgeClass(booking.payment_status)}`;
         document.getElementById('modalPaymentMethod').textContent = booking.payment_method || 'N/A';
@@ -510,8 +549,12 @@ document.addEventListener('DOMContentLoaded', function () {
         
         // Special requests
         const specialRequests = document.getElementById('modalSpecialRequests');
-        if (specialRequests) {
-            specialRequests.textContent = booking.special_requests || 'No special requests';
+        if (booking.special_requests) {
+            specialRequests.textContent = booking.special_requests;
+            specialRequests.className = '';
+        } else {
+            specialRequests.textContent = 'No special requests';
+            specialRequests.className = 'text-muted';
         }
         
         // Edit link
@@ -519,19 +562,31 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function formatDate(dateString) {
-        const date = new Date(dateString);
-        return date.toLocaleDateString('en-US', { 
-            year: 'numeric', 
-            month: 'short', 
-            day: 'numeric' 
-        });
+        if (!dateString) return 'N/A';
+        try {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', { 
+                year: 'numeric', 
+                month: 'short', 
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        } catch (e) {
+            return 'Invalid date';
+        }
     }
 
     function calculateNights(checkIn, checkOut) {
-        const checkInDate = new Date(checkIn);
-        const checkOutDate = new Date(checkOut);
-        const diffTime = Math.abs(checkOutDate - checkInDate);
-        return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        if (!checkIn || !checkOut) return 'N/A';
+        try {
+            const checkInDate = new Date(checkIn);
+            const checkOutDate = new Date(checkOut);
+            const diffTime = Math.abs(checkOutDate - checkInDate);
+            return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        } catch (e) {
+            return 'N/A';
+        }
     }
 
     function getStatusBadgeClass(status) {
@@ -539,6 +594,7 @@ document.addEventListener('DOMContentLoaded', function () {
             'confirmed': 'success',
             'pending': 'warning',
             'checked_in': 'info',
+            'checked_out': 'secondary',
             'cancelled': 'danger'
         };
         return statusClasses[status] || 'secondary';
@@ -569,53 +625,69 @@ document.addEventListener('DOMContentLoaded', function () {
     document.addEventListener('click', function(e) {
         if (e.target.classList.contains('modal-quick-status-update')) {
             e.preventDefault();
-            const modal = document.getElementById('bookingDetailsModal');
-            const bookingId = modal.querySelector('#modalBookingId').textContent;
             const newStatus = e.target.getAttribute('data-status');
             
-            updateBookingStatus(bookingId, newStatus);
+            if (currentBookingId) {
+                updateBookingStatus(currentBookingId, newStatus);
+            } else {
+                showToast('Error', 'No booking selected', 'error');
+            }
         }
     });
 
     function updateBookingStatus(bookingId, newStatus) {
-        if (!confirm('Are you sure you want to update the booking status?')) {
+        if (!confirm(`Are you sure you want to update the booking status to "${newStatus}"?`)) {
             return;
         }
 
         // Show loading state
         const button = document.querySelector(`.quick-status-update[data-booking-id="${bookingId}"][data-status="${newStatus}"]`) || 
                        document.querySelector('.modal-quick-status-update[data-status="' + newStatus + '"]');
+        let originalText = '';
         if (button) {
-            const originalText = button.innerHTML;
+            originalText = button.innerHTML;
             button.innerHTML = '<i class="feather icon-loader spin me-1"></i>Updating...';
         }
+
+        // Use FormData for better Laravel compatibility
+        const formData = new FormData();
+        formData.append('status', newStatus);
+        formData.append('_token', '{{ csrf_token() }}');
 
         // Send AJAX request
         fetch(`/admin/bookings/${bookingId}/quick-status-update`, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
             },
-            body: JSON.stringify({
-                status: newStatus
-            })
+            body: formData
         })
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                return response.text().then(text => {
+                    let errorMessage = `HTTP error! status: ${response.status}`;
+                    try {
+                        const errorData = JSON.parse(text);
+                        errorMessage = errorData.message || errorMessage;
+                    } catch (e) {
+                        if (text) errorMessage = text;
+                    }
+                    throw new Error(errorMessage);
+                });
+            }
+            return response.json();
+        })
         .then(data => {
+            console.log('Response data:', data);
             if (data.success) {
-                // Update the status badge in the table
-                const statusBadge = document.querySelector(`tr:has(button[data-booking-id="${bookingId}"]) .badge`);
-                if (statusBadge) {
-                    statusBadge.textContent = data.booking.status.charAt(0).toUpperCase() + data.booking.status.slice(1);
-                    statusBadge.className = `badge badge-${getStatusBadgeClass(data.booking.status)}`;
+                showToast('Success', `Booking status updated to ${newStatus}`, 'success');
+                
+                // Close modal if open
+                if (bookingModal && bookingModal._element.classList.contains('show')) {
+                    bookingModal.hide();
                 }
-                
-                // Update modal status if open
-                updateModalStatus(data.booking.status);
-                
-                // Show success message
-                showToast('Success', 'Booking status updated successfully', 'success');
                 
                 // Close dropdowns
                 const dropdowns = document.querySelectorAll('.dropdown-menu.show');
@@ -636,23 +708,14 @@ document.addEventListener('DOMContentLoaded', function () {
         })
         .catch(error => {
             console.error('Error:', error);
-            showToast('Error', 'An error occurred while updating status', 'error');
+            showToast('Error', 'Error updating status: ' + error.message, 'error');
         })
         .finally(() => {
             // Restore button text
-            if (button) {
+            if (button && originalText) {
                 button.innerHTML = originalText;
             }
         });
-    }
-
-    // Update modal status display when status changes
-    function updateModalStatus(status) {
-        const statusBadge = document.getElementById('modalStatus');
-        if (statusBadge) {
-            statusBadge.textContent = status.charAt(0).toUpperCase() + status.slice(1);
-            statusBadge.className = `badge badge-${getStatusBadgeClass(status)}`;
-        }
     }
 
     // Delete booking function
@@ -666,18 +729,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Toast notification function
     function showToast(title, message, type = 'info') {
-        // Create toast container if it doesn't exist
-        let toastContainer = document.getElementById('toast-container');
-        if (!toastContainer) {
-            toastContainer = document.createElement('div');
-            toastContainer.id = 'toast-container';
-            toastContainer.className = 'toast-container position-fixed top-0 end-0 p-3';
-            toastContainer.style.zIndex = '9999';
-            document.body.appendChild(toastContainer);
-        }
-
+        const toastContainer = document.getElementById('toast-container');
         const toastId = 'toast-' + Date.now();
-        const bgColor = type === 'success' ? 'bg-success' : type === 'error' ? 'bg-danger' : 'bg-info';
+        const bgColor = type === 'success' ? 'bg-success' : 
+                       type === 'error' ? 'bg-danger' : 
+                       type === 'warning' ? 'bg-warning' : 'bg-info';
         
         const toastHTML = `
             <div id="${toastId}" class="toast align-items-center text-white ${bgColor} border-0" role="alert">
@@ -695,7 +751,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const toastElement = document.getElementById(toastId);
         const toast = new bootstrap.Toast(toastElement, {
             autohide: true,
-            delay: 3000
+            delay: 5000
         });
         toast.show();
         
@@ -729,6 +785,11 @@ document.addEventListener('DOMContentLoaded', function () {
         .table > :not(caption) > * > * {
             vertical-align: middle;
         }
+        .badge-success { background-color: #28a745; }
+        .badge-warning { background-color: #ffc107; color: #212529; }
+        .badge-info { background-color: #17a2b8; }
+        .badge-secondary { background-color: #6c757d; }
+        .badge-danger { background-color: #dc3545; }
     `;
     document.head.appendChild(style);
 });

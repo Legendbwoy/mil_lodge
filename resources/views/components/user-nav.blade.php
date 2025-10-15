@@ -123,10 +123,10 @@
                 </li>
 
                 <li class="nav-item">
-                    <a href="{{ route('about') }}" class="nav-link">
+                    {{-- <a href="{{ route('about') }}" class="nav-link">
                         <span class="pcoded-micon"><i class="feather icon-info text-info"></i></span>
                         <span class="pcoded-mtext">About Us</span>
-                    </a>
+                    </a> --}}
                 </li>
 
                 <li class="nav-item">

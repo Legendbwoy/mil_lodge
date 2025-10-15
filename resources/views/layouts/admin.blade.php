@@ -16,7 +16,7 @@
     <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
     
     <style>
-        /* 3D Globe Rotation with Mirrored Back */
+        /* Your existing CSS styles remain the same */
         .logo-3d-container {
             width: 70px;
             height: 70px;
@@ -56,7 +56,6 @@
             }
         }
         
-        /* Notification Styles */
         .notification-badge {
             position: absolute;
             top: -5px;
@@ -134,7 +133,6 @@
             transform-style: preserve-3d;
         }
         
-        /* Enhanced 3D effects */
         .logo-3d-depth {
             border-radius: 50%;
             box-shadow: 
@@ -142,7 +140,6 @@
                 inset 0 0 15px rgba(255, 255, 255, 0.2);
         }
         
-        /* Container styling */
         .logo-wrapper {
             display: flex;
             align-items: center;
@@ -225,24 +222,34 @@
                             <ul class="noti-body" id="notificationList">
                                 @if(isset($checkoutNotifications) && count($checkoutNotifications) > 0)
                                     @foreach($checkoutNotifications as $notification)
-                                        <li class="notification notification-item {{ $notification['type'] }}-notification">
+                                        @php
+                                            // Safely get notification values with defaults
+                                            $icon = $notification['icon'] ?? 'bell';
+                                            $color = $notification['color'] ?? 'primary';
+                                            $type = $notification['type'] ?? 'info';
+                                            $message = $notification['message'] ?? 'Notification';
+                                            $accommodation = $notification['accommodation'] ?? 'Unknown Accommodation';
+                                            $checkOutTime = $notification['check_out_time'] ?? 'Unknown';
+                                            $timeRemaining = $notification['time_remaining'] ?? 'Unknown';
+                                        @endphp
+                                        <li class="notification notification-item {{ $type }}-notification">
                                             <div class="media">
                                                 <div class="media-body">
                                                     <p class="mb-1">
                                                         <strong>
-                                                            <i class="feather icon-{{ $notification['icon'] }} text-{{ $notification['color'] }} mr-1"></i>
-                                                            {{ $notification['message'] }}
+                                                            <i class="feather icon-{{ $icon }} text-{{ $color }} mr-1"></i>
+                                                            {{ $message }}
                                                         </strong>
                                                     </p>
                                                     <p class="mb-1 small">
-                                                        <i class="feather icon-home mr-1"></i>{{ $notification['accommodation'] }}
+                                                        <i class="feather icon-home mr-1"></i>{{ $accommodation }}
                                                     </p>
                                                     <p class="mb-0 small text-muted">
                                                         <i class="feather icon-clock mr-1"></i>
-                                                        Check-out: {{ $notification['check_out_time'] }}
+                                                        Check-out: {{ $checkOutTime }}
                                                         <span class="ml-2">•</span>
-                                                        <span class="ml-2 text-{{ $notification['color'] }}">
-                                                            {{ $notification['time_remaining'] }} left
+                                                        <span class="ml-2 text-{{ $color }}">
+                                                            {{ $timeRemaining }} left
                                                         </span>
                                                     </p>
                                                 </div>
@@ -349,74 +356,88 @@
                 });
             }
             
-            // Function to update notification UI
-            function updateNotificationUI(notifications, unreadCount) {
-                const notificationList = $('#notificationList');
-                const notificationCount = $('#notificationCount');
-                
-                // Update notification count
-                if (unreadCount > 0) {
-                    if (notificationCount.length === 0) {
-                        $('#notificationDropdown').append('<span class="notification-badge" id="notificationCount">' + unreadCount + '</span>');
-                    } else {
-                        notificationCount.text(unreadCount);
-                    }
-                } else {
-                    notificationCount.remove();
-                }
-                
-                // Update notification list
-                if (notifications.length > 0) {
-                    let notificationsHTML = '';
-                    notifications.forEach(notification => {
-                        notificationsHTML += `
-                            <li class="notification notification-item ${notification.type}-notification">
-                                <div class="media">
-                                    <div class="media-body">
-                                        <p class="mb-1">
-                                            <strong>
-                                                <i class="feather icon-${notification.icon} text-${notification.color} mr-1"></i>
-                                                ${notification.message}
-                                            </strong>
-                                        </p>
-                                        <p class="mb-1 small">
-                                            <i class="feather icon-home mr-1"></i>${notification.accommodation}
-                                        </p>
-                                        <p class="mb-0 small text-muted">
-                                            <i class="feather icon-clock mr-1"></i>
-                                            Check-out: ${notification.check_out_time}
-                                            <span class="ml-2">•</span>
-                                            <span class="ml-2 text-${notification.color}">
-                                                ${notification.time_remaining} left
-                                            </span>
-                                        </p>
-                                    </div>
-                                </div>
-                            </li>
-                        `;
-                    });
-                    notificationList.html(notificationsHTML);
-                } else {
-                    notificationList.html(`
-                        <li class="empty-notifications">
-                            <i class="feather icon-check-circle text-success" style="font-size: 48px;"></i>
-                            <p class="mt-2 mb-0">No upcoming check-outs</p>
-                            <small>You're all caught up!</small>
-                        </li>
-                    `);
-                }
-                
-                // Show browser notification for urgent alerts
-                const urgentNotifications = notifications.filter(n => n.type === 'urgent');
-                if (urgentNotifications.length > 0 && Notification.permission === 'granted') {
-                    urgentNotifications.forEach(notification => {
-                        new Notification('Urgent Check-out Alert', {
-                            body: notification.message,
-                            icon: '/assets/images/GAF-Logo.png'
-                        });
-                    });
-                }
-            }
+            // In your JavaScript, update the updateNotificationUI function:
+function updateNotificationUI(notifications, unreadCount) {
+    const notificationList = $('#notificationList');
+    const notificationCount = $('#notificationCount');
+    
+    // Update notification count
+    if (unreadCount > 0) {
+        if (notificationCount.length === 0) {
+            $('#notificationDropdown').append('<span class="notification-badge" id="notificationCount">' + unreadCount + '</span>');
+        } else {
+            notificationCount.text(unreadCount);
+        }
+    } else {
+        notificationCount.remove();
+    }
+    
+    // Update notification list
+    if (notifications.length > 0) {
+        let notificationsHTML = '';
+        notifications.forEach(notification => {
+            // Safely get all notification properties with defaults
+            const icon = notification.icon || 'bell';
+            const color = notification.color || 'primary';
+            const type = notification.type || 'info';
+            const message = notification.message || 'Check-out reminder';
+            const accommodation = notification.accommodation || 'Unknown Accommodation';
+            const checkOutTime = notification.check_out_time || 'Unknown time';
+            const timeRemaining = notification.time_remaining || 'Unknown';
+            const bookingId = notification.booking_id || 'Unknown';
+            const guestName = notification.guest_name || 'Unknown Guest';
+            
+            notificationsHTML += `
+                <li class="notification notification-item ${type}-notification">
+                    <div class="media">
+                        <div class="media-body">
+                            <p class="mb-1">
+                                <strong>
+                                    <i class="feather icon-${icon} text-${color} mr-1"></i>
+                                    ${message}
+                                </strong>
+                            </p>
+                            <p class="mb-1 small">
+                                <i class="feather icon-home mr-1"></i>${accommodation}
+                            </p>
+                            <p class="mb-0 small text-muted">
+                                <i class="feather icon-clock mr-1"></i>
+                                Check-out: ${checkOutTime}
+                                <span class="ml-2">•</span>
+                                <span class="ml-2 text-${color}">
+                                    ${timeRemaining} left
+                                </span>
+                            </p>
+                            <p class="mb-0 small text-muted">
+                                Guest: ${guestName} • Booking #${bookingId}
+                            </p>
+                        </div>
+                    </div>
+                </li>
+            `;
+        });
+        notificationList.html(notificationsHTML);
+    } else {
+        notificationList.html(`
+            <li class="empty-notifications">
+                <i class="feather icon-check-circle text-success" style="font-size: 48px;"></i>
+                <p class="mt-2 mb-0">No upcoming check-outs</p>
+                <small>You're all caught up!</small>
+            </li>
+        `);
+    }
+    
+    // Show browser notification for urgent alerts
+    const urgentNotifications = notifications.filter(n => n.type === 'urgent');
+    if (urgentNotifications.length > 0 && Notification.permission === 'granted') {
+        urgentNotifications.forEach(notification => {
+            new Notification('Urgent Check-out Alert', {
+                body: notification.message || 'Guest needs to check out soon',
+                icon: '/assets/images/GAF-Logo.png'
+            });
+        });
+    }
+}
             
             // Mark all as read
             $('#markAllRead').on('click', function(e) {
