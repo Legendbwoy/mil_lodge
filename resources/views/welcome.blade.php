@@ -42,7 +42,7 @@
         @endif
 
         <!-- Hero Section -->
-        <div class="hero-section mb-5">
+        <div class="hero-section mb-4">
             <div class="row align-items-center">
                 <div class="col-lg-6">
                     <h1 class="display-5 fw-bold text-primary mb-3">Find Your Perfect Stay</h1>
@@ -63,293 +63,123 @@
                     <div class="hero-image rounded-3 overflow-hidden shadow-lg">
                         <img src="https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-1.2.1&auto=format&fit=crop&w=1200&q=80"
                             alt="Luxury Accommodation" class="img-fluid"
-                            style="height: 300px; width: 100%; object-fit: cover;">
+                            style="height: 250px; width: 100%; object-fit: cover;">
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Search and Filter Card -->
-        <div class="card shadow-sm border-0 mb-5">
-            <div class="card-body p-4">
-                <div class="row mb-4">
-                    <div class="col-md-8">
-                        <h2 class="section-title h4 mb-2">Search Accommodations</h2>
-                        <p class="text-muted mb-0">Filter by location, type, and capacity to find your ideal stay</p>
+        <!-- Compact Search and Filter Card -->
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-body p-3">
+                <div class="row align-items-center mb-3">
+                    <div class="col-md-6">
+                        <h5 class="section-title mb-0">Search Available Accommodations</h5>
+                    </div>
+                    <div class="col-md-6 text-md-end">
+                        <small class="text-muted">{{ $accommodations->total() }} available properties</small>
                     </div>
                 </div>
 
-                <!-- Search and Filter Section -->
-                <div class="search-filter">
-                    <form action="{{ route('home') }}" method="GET">
-                        <div class="row g-3 align-items-end">
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label class="form-label fw-semibold mb-2">Destination</label>
-                                    <div class="input-group input-group-lg">
-                                        <span class="input-group-text bg-white border-end-0">
-                                            <i class="fas fa-map-marker-alt text-primary"></i>
-                                        </span>
-                                        <input type="text" name="location" class="form-control border-start-0 ps-0"
-                                            placeholder="Where are you going?" value="{{ request('location') }}"
-                                            style="border-radius: 0 8px 8px 0;">
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label class="form-label fw-semibold mb-2">Guests</label>
-                                    <div class="input-group input-group-lg">
-                                        <span class="input-group-text bg-white border-end-0">
-                                            <i class="fas fa-user text-primary"></i>
-                                        </span>
-                                        <select name="guests" class="form-control border-start-0 ps-0"
-                                            style="border-radius: 0 8px 8px 0;">
-                                            <option value="">Any number</option>
-                                            @for ($i = 1; $i <= 10; $i++)
-                                                <option value="{{ $i }}"
-                                                    {{ request('guests') == $i ? 'selected' : '' }}>
-                                                    {{ $i }} Guest{{ $i > 1 ? 's' : '' }}
-                                                </option>
-                                            @endfor
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label class="form-label fw-semibold mb-2">Accommodation Type</label>
-                                    <div class="input-group input-group-lg">
-                                        <span class="input-group-text bg-white border-end-0">
-                                            <i class="fas fa-home text-primary"></i>
-                                        </span>
-                                        <select name="type" class="form-control border-start-0 ps-0"
-                                            style="border-radius: 0 8px 8px 0;">
-                                            <option value="">All Types</option>
-                                            <option value="barracks" {{ request('type') == 'barracks' ? 'selected' : '' }}>
-                                                Barracks</option>
-                                            <option value="family_quarters"
-                                                {{ request('type') == 'family_quarters' ? 'selected' : '' }}>Family
-                                                Quarters</option>
-                                            <option value="voq" {{ request('type') == 'voq' ? 'selected' : '' }}>
-                                                Visiting Officers Quarters</option>
-                                            <option value="tlq" {{ request('type') == 'tlq' ? 'selected' : '' }}>
-                                                Temporary Lodging</option>
-                                            <option value="recreation_lodge"
-                                                {{ request('type') == 'recreation_lodge' ? 'selected' : '' }}>Recreation
-                                                Lodge</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="col-md-2">
-                                <button type="submit" class="btn btn-primary btn-lg w-100 h-100">
-                                    <i class="fas fa-search me-2"></i> Search
-                                </button>
+                <!-- Compact Search and Filter Section -->
+                <form action="{{ route('home') }}" method="GET">
+                    <div class="row g-2 align-items-end">
+                        <!-- Location Search -->
+                        <div class="col-md-3">
+                            <label class="form-label small fw-semibold mb-1">Location</label>
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-text bg-white border-end-0 py-2">
+                                    <i class="fas fa-map-marker-alt text-primary small"></i>
+                                </span>
+                                <input type="text" name="location" class="form-control border-start-0 ps-1 py-2" 
+                                    placeholder="Search location..." value="{{ request('location') }}">
                             </div>
                         </div>
 
-                        <!-- Advanced Filters Toggle -->
-                        <div class="row mt-3">
-                            <div class="col-12">
-                                <a href="#advancedFilters" class="text-primary text-decoration-none small"
-                                    data-bs-toggle="collapse" role="button" aria-expanded="false"
-                                    aria-controls="advancedFilters">
-                                    <i class="fas fa-sliders-h me-1"></i> Advanced Filters
+                        <!-- Accommodation Type -->
+                        <div class="col-md-2">
+                            <label class="form-label small fw-semibold mb-1">Type</label>
+                            <select name="type" class="form-control form-control-sm py-2">
+                                <option value="">All Types</option>
+                                <option value="barracks" {{ request('type') == 'barracks' ? 'selected' : '' }}>Barracks</option>
+                                <option value="family_quarters" {{ request('type') == 'family_quarters' ? 'selected' : '' }}>Family Quarters</option>
+                                <option value="voq" {{ request('type') == 'voq' ? 'selected' : '' }}>VOQ</option>
+                                <option value="tlq" {{ request('type') == 'tlq' ? 'selected' : '' }}>TLQ</option>
+                                <option value="recreation_lodge" {{ request('type') == 'recreation_lodge' ? 'selected' : '' }}>Recreation</option>
+                            </select>
+                        </div>
+
+                        <!-- Available Beds Filter -->
+                        <div class="col-md-2">
+                            <label class="form-label small fw-semibold mb-1">Min Beds Available</label>
+                            <select name="min_beds" class="form-control form-control-sm py-2">
+                                <option value="">Any</option>
+                                <option value="1" {{ request('min_beds') == '1' ? 'selected' : '' }}>1+ Bed</option>
+                                <option value="2" {{ request('min_beds') == '2' ? 'selected' : '' }}>2+ Beds</option>
+                                <option value="3" {{ request('min_beds') == '3' ? 'selected' : '' }}>3+ Beds</option>
+                                <option value="5" {{ request('min_beds') == '5' ? 'selected' : '' }}>5+ Beds</option>
+                            </select>
+                        </div>
+
+                        <!-- Sort Options -->
+                        <div class="col-md-2">
+                            <label class="form-label small fw-semibold mb-1">Sort By</label>
+                            <select name="sort" class="form-control form-control-sm py-2">
+                                <option value="">Default</option>
+                                <option value="available_beds_desc" {{ request('sort') == 'available_beds_desc' ? 'selected' : '' }}>Most Beds Available</option>
+                                <option value="name_asc" {{ request('sort') == 'name_asc' ? 'selected' : '' }}>Name A-Z</option>
+                                <option value="rating_desc" {{ request('sort') == 'rating_desc' ? 'selected' : '' }}>Highest Rated</option>
+                            </select>
+                        </div>
+
+                        <!-- Search Button -->
+                        <div class="col-md-3">
+                            <div class="d-flex gap-2">
+                                <button type="submit" class="btn btn-primary btn-sm flex-fill py-2">
+                                    <i class="fas fa-search me-1"></i> Search
+                                </button>
+                                <a href="{{ route('home') }}" class="btn btn-outline-secondary btn-sm py-2" title="Reset Filters">
+                                    <i class="fas fa-refresh"></i>
                                 </a>
                             </div>
                         </div>
+                    </div>
 
-                        <!-- Advanced Filters -->
-                        <div class="collapse mt-3" id="advancedFilters">
-                            <div class="card card-body border-0 bg-light">
-                                <div class="row g-3">
-                                    <div class="col-md-2">
-                                        <label class="form-label fw-semibold">Bedrooms</label>
-                                        <select class="form-control" name="bedrooms">
-                                            <option value="">Any</option>
-                                            <option value="1" {{ request('bedrooms') == '1' ? 'selected' : '' }}>1
-                                                Bedroom</option>
-                                            <option value="2" {{ request('bedrooms') == '2' ? 'selected' : '' }}>2
-                                                Bedrooms</option>
-                                            <option value="3" {{ request('bedrooms') == '3' ? 'selected' : '' }}>3+
-                                                Bedrooms</option>
-                                        </select>
-                                    </div>
-                                    <div class="col-md-2">
-                                        <label class="form-label fw-semibold">Bathrooms</label>
-                                        <select class="form-control" name="bathrooms">
-                                            <option value="">Any</option>
-                                            <option value="1" {{ request('bathrooms') == '1' ? 'selected' : '' }}>1
-                                                Bathroom</option>
-                                            <option value="2" {{ request('bathrooms') == '2' ? 'selected' : '' }}>2
-                                                Bathrooms</option>
-                                            <option value="3" {{ request('bathrooms') == '3' ? 'selected' : '' }}>3+
-                                                Bathrooms</option>
-                                        </select>
-                                    </div>
-                                    <div class="col-md-2">
-                                        <label class="form-label fw-semibold">Max Guests</label>
-                                        <select class="form-control" name="max_guests">
-                                            <option value="">Any</option>
-                                            @for ($i = 1; $i <= 10; $i++)
-                                                <option value="{{ $i }}"
-                                                    {{ request('max_guests') == $i ? 'selected' : '' }}>
-                                                    {{ $i }}+ Guests
-                                                </option>
-                                            @endfor
-                                        </select>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <label class="form-label fw-semibold">Sort By</label>
-                                        <select class="form-control" name="sort">
-                                            <option value="">Default</option>
-                                            <option value="rating_desc"
-                                                {{ request('sort') == 'rating_desc' ? 'selected' : '' }}>Highest Rated
-                                            </option>
-                                            <option value="name_asc"
-                                                {{ request('sort') == 'name_asc' ? 'selected' : '' }}>Name: A-Z</option>
-                                            <option value="guests_desc"
-                                                {{ request('sort') == 'guests_desc' ? 'selected' : '' }}>Most Guests
-                                            </option>
-                                        </select>
-                                    </div>
+                    <!-- Active Filters Display -->
+                    @if (request()->anyFilled(['location', 'type', 'min_beds', 'sort']))
+                        <div class="row mt-3">
+                            <div class="col-12">
+                                <div class="d-flex align-items-center flex-wrap gap-1">
+                                    <span class="text-muted small">Active filters:</span>
+                                    @if (request('location'))
+                                        <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 small py-1 px-2">
+                                            Location: {{ request('location') }}
+                                            <a href="{{ request()->fullUrlWithQuery(['location' => null]) }}" class="text-primary ms-1">
+                                                <i class="fas fa-times small"></i>
+                                            </a>
+                                        </span>
+                                    @endif
+                                    @if (request('type'))
+                                        <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 small py-1 px-2">
+                                            Type: {{ ucfirst(str_replace('_', ' ', request('type'))) }}
+                                            <a href="{{ request()->fullUrlWithQuery(['type' => null]) }}" class="text-primary ms-1">
+                                                <i class="fas fa-times small"></i>
+                                            </a>
+                                        </span>
+                                    @endif
+                                    @if (request('min_beds'))
+                                        <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 small py-1 px-2">
+                                            Min Beds: {{ request('min_beds') }}+
+                                            <a href="{{ request()->fullUrlWithQuery(['min_beds' => null]) }}" class="text-primary ms-1">
+                                                <i class="fas fa-times small"></i>
+                                            </a>
+                                        </span>
+                                    @endif
                                 </div>
                             </div>
                         </div>
-
-                        <!-- Active Filters Display -->
-                        @if (request()->anyFilled([
-                                'location',
-                                'guests',
-                                'type',
-                                'bedrooms',
-                                'bathrooms',
-                            ]))
-                            <div class="row mt-3">
-                                <div class="col-12">
-                                    <div class="d-flex align-items-center flex-wrap gap-2">
-                                        <span class="text-muted small">Active filters:</span>
-                                        @if (request('location'))
-                                            <span class="badge bg-primary">
-                                                Location: {{ request('location') }}
-                                                <a href="{{ request()->fullUrlWithQuery(['location' => null]) }}"
-                                                    class="text-white ms-1">
-                                                    <i class="fas fa-times"></i>
-                                                </a>
-                                            </span>
-                                        @endif
-                                        @if (request('guests'))
-                                            <span class="badge bg-primary">
-                                                Guests: {{ request('guests') }}
-                                                <a href="{{ request()->fullUrlWithQuery(['guests' => null]) }}"
-                                                    class="text-white ms-1">
-                                                    <i class="fas fa-times"></i>
-                                                </a>
-                                            </span>
-                                        @endif
-                                        @if (request('type'))
-                                            <span class="badge bg-primary">
-                                                Type: {{ ucfirst(str_replace('_', ' ', request('type'))) }}
-                                                <a href="{{ request()->fullUrlWithQuery(['type' => null]) }}"
-                                                    class="text-white ms-1">
-                                                    <i class="fas fa-times"></i>
-                                                </a>
-                                            </span>
-                                        @endif
-                                        @if (request('bedrooms'))
-                                            <span class="badge bg-primary">
-                                                Bedrooms: {{ request('bedrooms') }}+
-                                                <a href="{{ request()->fullUrlWithQuery(['bedrooms' => null]) }}"
-                                                    class="text-white ms-1">
-                                                    <i class="fas fa-times"></i>
-                                                </a>
-                                            </span>
-                                        @endif
-                                        @if (request('bathrooms'))
-                                            <span class="badge bg-primary">
-                                                Bathrooms: {{ request('bathrooms') }}+
-                                                <a href="{{ request()->fullUrlWithQuery(['bathrooms' => null]) }}"
-                                                    class="text-white ms-1">
-                                                    <i class="fas fa-times"></i>
-                                                </a>
-                                            </span>
-                                        @endif
-                                        <a href="{{ route('home') }}" class="btn btn-outline-danger btn-sm">
-                                            <i class="fas fa-times me-1"></i> Clear All
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                        @endif
-                    </form>
-                </div>
-            </div>
-        </div>
-
-        <!-- Results Header -->
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <div>
-                <h2 class="h4 mb-1">Available Accommodations</h2>
-                <p class="text-muted mb-0">{{ $accommodations->total() }} properties found</p>
-            </div>
-            <div class="d-flex gap-2">
-                <div class="dropdown">
-                    <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                        <i class="fas fa-sort me-2"></i> Sort By
-                    </button>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item"
-                                href="{{ request()->fullUrlWithQuery(['sort' => 'rating_desc']) }}">Highest Rated</a></li>
-                        <li><a class="dropdown-item"
-                                href="{{ request()->fullUrlWithQuery(['sort' => 'name_asc']) }}">Name: A-Z</a></li>
-                    </ul>
-                </div>
-                <button class="btn btn-outline-primary" type="button" data-bs-toggle="collapse"
-                    data-bs-target="#filterCollapse">
-                    <i class="fas fa-filter me-2"></i> Filters
-                </button>
-            </div>
-        </div>
-
-        <!-- Additional Filters -->
-        <div class="collapse mb-4" id="filterCollapse">
-            <div class="card card-body">
-                <div class="row g-3">
-                    <div class="col-md-3">
-                        <label class="form-label fw-semibold">Accommodation Type</label>
-                        <select class="form-control" id="typeFilter">
-                            <option value="">All Types</option>
-                            <option value="barracks">Barracks</option>
-                            <option value="family_quarters">Family Quarters</option>
-                            <option value="voq">Visiting Officers Quarters</option>
-                            <option value="tlq">Temporary Lodging</option>
-                            <option value="recreation_lodge">Recreation Lodge</option>
-                        </select>
-                    </div>
-                    <div class="col-md-3">
-                        <label class="form-label fw-semibold">Bedrooms</label>
-                        <select class="form-control" id="bedroomsFilter">
-                            <option value="">Any</option>
-                            <option value="1">1 Bedroom</option>
-                            <option value="2">2 Bedrooms</option>
-                            <option value="3">3+ Bedrooms</option>
-                        </select>
-                    </div>
-                    <div class="col-md-3">
-                        <label class="form-label fw-semibold">Amenities</label>
-                        <select class="form-control" id="amenitiesFilter">
-                            <option value="">All Amenities</option>
-                            <option value="wifi">WiFi</option>
-                            <option value="pool">Swimming Pool</option>
-                            <option value="parking">Parking</option>
-                            <option value="breakfast">Breakfast</option>
-                        </select>
-                    </div>
-                </div>
+                    @endif
+                </form>
             </div>
         </div>
 
@@ -389,34 +219,33 @@
                 @endphp
 
                 <div class="col-lg-4 col-md-6 mb-4 accommodation-item"
-                    data-type="{{ $accommodation->type }}" data-bedrooms="{{ $accommodation->bedrooms }}"
+                    data-type="{{ $accommodation->type }}" 
+                    data-bedrooms="{{ $accommodation->bedrooms }}"
                     data-available-beds="{{ $accommodation->available_beds }}"
                     data-total-beds="{{ $accommodation->total_beds }}"
                     data-rating="{{ $accommodation->average_rating }}">
                     <div class="card accommodation-card h-100 shadow-sm border-0 hover-lift">
                         <div class="card-img-container position-relative overflow-hidden">
                             @if ($accommodation->is_featured)
-                                <span
-                                    class="featured-badge position-absolute top-0 start-0 m-3 badge bg-warning text-dark">
+                                <span class="featured-badge position-absolute top-0 start-0 m-2 badge bg-warning text-dark small">
                                     <i class="fas fa-star me-1"></i> Featured
                                 </span>
                             @endif
 
-                            @if (!$accommodation->is_available)
-                                <div
-                                    class="position-absolute top-0 start-0 w-100 h-100 bg-dark bg-opacity-50 d-flex align-items-center justify-content-center">
-                                    <span class="badge bg-danger py-2 px-3">Not Available</span>
+                            @if (!$accommodation->is_available || $accommodation->available_beds == 0)
+                                <div class="position-absolute top-0 start-0 w-100 h-100 bg-dark bg-opacity-50 d-flex align-items-center justify-content-center">
+                                    <span class="badge bg-danger py-1 px-2 small">Fully Booked</span>
                                 </div>
                             @endif
 
                             <img src="{{ $featuredUrl }}" class="card-img-top main-image"
                                 alt="{{ $accommodation->name }}"
-                                style="height:220px; object-fit:cover; width:100%; transition: transform 0.3s ease;">
+                                style="height:200px; object-fit:cover; width:100%; transition: transform 0.3s ease;">
 
-                            <div class="img-overlay p-3 position-absolute bottom-0 start-0 w-100"
+                            <div class="img-overlay p-2 position-absolute bottom-0 start-0 w-100"
                                 style="background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.7) 100%);">
                                 <div class="text-white">
-                                    <h5 class="mb-2 fw-bold">{{ $accommodation->name }}</h5>
+                                    <h6 class="mb-1 fw-bold">{{ $accommodation->name }}</h6>
                                     <small class="d-flex align-items-center">
                                         <i class="fas fa-map-marker-alt me-1"></i>
                                         {{ $accommodation->location }}
@@ -433,7 +262,7 @@
                                         data-images='@json($imageUrls)'>
                                         <i class="fas fa-eye"></i>
                                     </button>
-                                    @if ($accommodation->is_available)
+                                    @if ($accommodation->is_available && $accommodation->available_beds > 0)
                                         <button class="btn btn-primary btn-sm book-now-btn" data-bs-toggle="modal"
                                             data-bs-target="#bookingModal" data-accommodation-id="{{ $accommodation->id }}"
                                             data-accommodation-name="{{ $accommodation->name }}"
@@ -446,61 +275,45 @@
                             </div>
                         </div>
 
-                        <div class="card-body d-flex flex-column">
+                        <div class="card-body d-flex flex-column p-3">
                             <div class="d-flex justify-content-between align-items-center mb-2">
-                                <div class="rating">
+                                <div class="rating small">
                                     @for ($i = 1; $i <= 5; $i++)
                                         @if ($i <= floor($accommodation->average_rating))
                                             <i class="fas fa-star text-warning"></i>
-                                        @elseif(
-                                            $i == ceil($accommodation->average_rating) &&
-                                                $accommodation->average_rating != floor($accommodation->average_rating))
+                                        @elseif($i == ceil($accommodation->average_rating) && $accommodation->average_rating != floor($accommodation->average_rating))
                                             <i class="fas fa-star-half-alt text-warning"></i>
                                         @else
                                             <i class="far fa-star text-warning"></i>
                                         @endif
                                     @endfor
-                                    <span
-                                        class="text-muted ms-1">({{ number_format($accommodation->average_rating, 1) }})</span>
+                                    <span class="text-muted ms-1">({{ number_format($accommodation->average_rating, 1) }})</span>
                                 </div>
 
                                 <div class="text-muted small">
                                     <i class="fas fa-bed me-1 text-primary"></i> {{ $accommodation->bedrooms }}
                                     <i class="fas fa-bath ms-2 me-1 text-primary"></i> {{ $accommodation->bathrooms }}
-                                    <i class="fas fa-user ms-2 me-1 text-primary"></i> {{ $accommodation->max_guests }}
                                 </div>
                             </div>
 
-                            <p class="card-text text-muted mb-3 flex-grow-1">
-                                {{ Str::limit($accommodation->description, 120) }}</p>
+                            <p class="card-text text-muted small mb-3 flex-grow-1">
+                                {{ Str::limit($accommodation->description, 100) }}
+                            </p>
 
-                            <div class="amenities-list mb-3">
-                                @foreach ($accommodation->amenities->take(3) as $amenity)
-                                    <span class="badge bg-light text-dark small mb-1">
-                                        <i class="fas fa-check text-success me-1"></i>{{ $amenity->name }}
+                            <!-- Bed Availability Section -->
+                            <div class="bed-info mb-3">
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <span class="text-muted small">
+                                        <i class="fas fa-bed text-primary me-1"></i>
+                                        Beds Available:
                                     </span>
-                                @endforeach
-                                @if ($accommodation->amenities->count() > 3)
-                                    <span class="badge bg-light text-dark small mb-1">
-                                        +{{ $accommodation->amenities->count() - 3 }} more
+                                    <span class="fw-bold text-{{ $accommodation->available_beds > 0 ? 'success' : 'danger' }} small">
+                                        {{ $accommodation->available_beds }}/{{ $accommodation->total_beds }}
                                     </span>
-                                @endif
-
-                                <div class="bed-info mb-3">
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <span class="text-muted">
-                                            <i class="fas fa-bed text-primary me-1"></i>
-                                            Beds:
-                                        </span>
-                                        <span class="fw-bold">
-                                            {{ $accommodation->available_beds }}/{{ $accommodation->total_beds }}
-                                            Available
-                                        </span>
-                                    </div>
-                                    <div class="progress mt-1" style="height: 5px;">
-                                        <div class="progress-bar bg-{{ $accommodation->available_beds > 0 ? 'success' : 'danger' }}"
-                                            style="width: {{ ($accommodation->available_beds / $accommodation->total_beds) * 100 }}%">
-                                        </div>
+                                </div>
+                                <div class="progress" style="height: 4px;">
+                                    <div class="progress-bar bg-{{ $accommodation->available_beds > 0 ? 'success' : 'danger' }}"
+                                        style="width: {{ ($accommodation->available_beds / $accommodation->total_beds) * 100 }}%">
                                     </div>
                                 </div>
                             </div>
@@ -512,8 +325,8 @@
                                     <i class="fas fa-info-circle me-1"></i> Details
                                 </button>
 
-                                @if ($accommodation->is_available)
-                                    <button class="btn btn-primary book-now-btn" data-bs-toggle="modal"
+                                @if ($accommodation->is_available && $accommodation->available_beds > 0)
+                                    <button class="btn btn-primary btn-sm book-now-btn" data-bs-toggle="modal"
                                         data-bs-target="#bookingModal" data-accommodation-id="{{ $accommodation->id }}"
                                         data-accommodation-name="{{ $accommodation->name }}"
                                         data-available-beds="{{ $accommodation->available_beds }}"
@@ -521,8 +334,8 @@
                                         <i class="fas fa-calendar-check me-1"></i> Book Now
                                     </button>
                                 @else
-                                    <button class="btn btn-secondary" disabled>
-                                        <i class="fas fa-times me-1"></i> Not Available
+                                    <button class="btn btn-secondary btn-sm" disabled>
+                                        <i class="fas fa-times me-1"></i> No Beds
                                     </button>
                                 @endif
                             </div>
@@ -537,7 +350,7 @@
                             <h4 class="text-muted">No accommodations found</h4>
                             <p class="text-muted mb-4">Try adjusting your search criteria or <a
                                     href="{{ route('home') }}" class="text-primary">view all accommodations</a>.</p>
-                            <button class="btn btn-primary" onclick="window.location.href='{{ route('home') }}'">
+                            <button class="btn btn-primary btn-sm" onclick="window.location.href='{{ route('home') }}'">
                                 <i class="fas fa-refresh me-2"></i> Reset Filters
                             </button>
                         </div>
@@ -548,11 +361,11 @@
 
         <!-- Pagination -->
         @if ($accommodations->hasPages())
-            <nav aria-label="Page navigation" class="mt-5">
+            <nav aria-label="Page navigation" class="mt-4">
                 <div class="card">
-                    <div class="card-body py-3">
+                    <div class="card-body py-2">
                         <div class="d-flex justify-content-between align-items-center flex-wrap">
-                            <div class="text-muted mb-2 mb-md-0">
+                            <div class="text-muted small mb-2 mb-md-0">
                                 Showing {{ $accommodations->firstItem() ?? 0 }} to {{ $accommodations->lastItem() ?? 0 }}
                                 of {{ $accommodations->total() }} results
                             </div>
@@ -594,7 +407,7 @@
 
     <!-- Details Modal -->
     <div class="modal fade" id="detailsModal" tabindex="-1" aria-labelledby="detailsModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 id="detailsModalLabel" class="modal-title">Accommodation Details</h5>
@@ -962,98 +775,136 @@
 @endsection
 
 @section('styles')
-    <style>
+<style>
+    .hero-section {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        padding: 2rem 1rem;
+        border-radius: 0.75rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .hover-lift {
+        transition: all 0.3s ease;
+    }
+
+    .hover-lift:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 0.35rem 0.75rem rgba(0, 0, 0, 0.15) !important;
+    }
+
+    .accommodation-card:hover .quick-actions {
+        opacity: 1 !important;
+    }
+
+    .accommodation-card:hover .main-image {
+        transform: scale(1.05);
+    }
+
+    .section-title {
+        position: relative;
+        padding-bottom: 0.5rem;
+        font-size: 1.1rem;
+    }
+
+    .section-title::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 40px;
+        height: 2px;
+        background: linear-gradient(90deg, #0d6efd, #6f42c1);
+        border-radius: 2px;
+    }
+
+    .featured-badge {
+        font-size: 0.7rem;
+        font-weight: 600;
+    }
+
+    .rating i {
+        font-size: 0.8rem;
+    }
+
+    .quick-actions .btn-group .btn {
+        border-radius: 0.25rem;
+        margin: 0 1px;
+        padding: 0.25rem 0.5rem;
+    }
+
+    /* Compact form styles */
+    .form-control-sm {
+        font-size: 0.875rem;
+    }
+
+    /* Ensure modals are scrollable and properly styled */
+    .modal-dialog-scrollable .modal-content {
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+
+    .modal-body {
+        max-height: calc(90vh - 200px);
+        overflow-y: auto;
+    }
+
+    /* Make sure submit button is always clickable by default */
+    #submitBookingBtn {
+        cursor: pointer;
+    }
+
+    #submitBookingBtn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+
+    /* Ensure buttons are clickable */
+    .book-now-btn, .view-details-btn {
+        cursor: pointer;
+        z-index: 10;
+        position: relative;
+    }
+
+    /* Style for beds dropdown */
+    #number_of_beds:disabled {
+        background-color: #e9ecef;
+        opacity: 0.7;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
         .hero-section {
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-            padding: 3rem 2rem;
-            border-radius: 1rem;
-            margin-bottom: 2rem;
+            padding: 1.5rem 1rem;
+            text-align: center;
         }
 
-        .hover-lift {
-            transition: all 0.3s ease;
+        .hero-section .display-5 {
+            font-size: 1.75rem;
         }
 
-        .hover-lift:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+        .search-filter .col-md-3 {
+            margin-bottom: 0.5rem;
         }
 
-        .accommodation-card:hover .quick-actions {
-            opacity: 1 !important;
+        .quick-actions {
+            display: none !important;
         }
-
-        .accommodation-card:hover .main-image {
-            transform: scale(1.05);
+        
+        .card-img-top {
+            height: 180px !important;
         }
+    }
 
-        .amenities-list .badge {
-            margin-right: 0.25rem;
-            margin-bottom: 0.25rem;
+    @media (max-width: 576px) {
+        .hero-section .display-5 {
+            font-size: 1.5rem;
         }
-
-        .section-title {
-            position: relative;
-            padding-bottom: 0.5rem;
+        
+        .card-body {
+            padding: 1rem !important;
         }
-
-        .section-title::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 50px;
-            height: 3px;
-            background: linear-gradient(90deg, #0d6efd, #6f42c1);
-            border-radius: 2px;
-        }
-
-        .featured-badge {
-            font-size: 0.8rem;
-            font-weight: 600;
-        }
-
-        .rating i {
-            font-size: 0.9rem;
-        }
-
-        .quick-actions .btn-group .btn {
-            border-radius: 0.375rem;
-            margin: 0 2px;
-        }
-
-        /* Pagination styling */
-        .pagination .page-link {
-            border-radius: 0.375rem;
-            margin: 0 2px;
-            border: 1px solid #dee2e6;
-        }
-
-        .pagination .page-item.active .page-link {
-            background: linear-gradient(135deg, #0d6efd, #6f42c1);
-            border-color: #0d6efd;
-        }
-
-        /* Responsive adjustments */
-        @media (max-width: 768px) {
-            .hero-section {
-                padding: 2rem 1rem;
-                text-align: center;
-            }
-
-            .hero-section .display-5 {
-                font-size: 2rem;
-            }
-
-            .search-filter .col-md-3 {
-                margin-bottom: 1rem;
-            }
-
-            .quick-actions {
-                display: none !important;
-            }
-        }
-    </style>
+    }
+</style>
 @endsection
 
 @section('scripts')
@@ -1063,6 +914,30 @@ document.addEventListener('DOMContentLoaded', function() {
     // --- Helpers ---
     const qs = s => document.querySelector(s);
     const qsa = s => Array.from(document.querySelectorAll(s));
+
+    // Add real-time search functionality
+    const searchForm = document.querySelector('form[action="{{ route("home") }}"]');
+    if (searchForm) {
+        const inputs = searchForm.querySelectorAll('input, select');
+        
+        inputs.forEach(input => {
+            input.addEventListener('change', function() {
+                // Add a small delay for better UX
+                clearTimeout(window.searchTimeout);
+                window.searchTimeout = setTimeout(() => {
+                    searchForm.submit();
+                }, 500);
+            });
+        });
+    }
+
+    // Quick filter buttons for common searches
+    const quickFilters = [
+        { text: 'Available Now', query: 'min_beds=1' },
+        { text: 'Multiple Beds', query: 'min_beds=3' },
+        { text: 'Barracks', query: 'type=barracks' },
+        { text: 'Family Quarters', query: 'type=family_quarters' }
+    ];
 
     // Initialize Bootstrap modals
     const detailsModalElement = document.getElementById('detailsModal');
@@ -1563,40 +1438,4 @@ document.addEventListener('DOMContentLoaded', function() {
 
 });
 </script>
-
-<style>
-    /* Ensure modals are scrollable and properly styled */
-    .modal-dialog-scrollable .modal-content {
-        max-height: 90vh;
-        overflow-y: auto;
-    }
-
-    .modal-body {
-        max-height: calc(90vh - 200px);
-        overflow-y: auto;
-    }
-
-    /* Make sure submit button is always clickable by default */
-    #submitBookingBtn {
-        cursor: pointer;
-    }
-
-    #submitBookingBtn:disabled {
-        opacity: 0.6;
-        cursor: not-allowed;
-    }
-
-    /* Ensure buttons are clickable */
-    .book-now-btn, .view-details-btn {
-        cursor: pointer;
-        z-index: 10;
-        position: relative;
-    }
-
-    /* Style for beds dropdown */
-    #number_of_beds:disabled {
-        background-color: #e9ecef;
-        opacity: 0.7;
-    }
-</style>
-@endsection
+@endsection 

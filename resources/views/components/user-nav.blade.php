@@ -3,10 +3,9 @@
     <div class="navbar-wrapper">
         <div class="navbar-content scroll-div">
             
-            <!-- User Profile Section (Simplified) -->
+            <!-- User Profile Section -->
             <div class="">
                 <div class="main-menu-header">
-                    {{-- <img class="img-radius" src="assets/images/user/avatar-2.jpg" alt="User-Profile-Image"> --}}
                     <div class="user-details">
                         <div id="more-details">Welcome Guest <i class="fa fa-caret-down"></i></div>
                     </div>
@@ -46,9 +45,7 @@
                     </a>
                 </li>
 
-                
-
-                <!-- Reports & Issues -->
+                <!-- Reports & Support -->
                 <li class="nav-item pcoded-hasmenu">
                     <a href="#!" class="nav-link">
                         <span class="pcoded-micon"><i class="feather icon-alert-triangle"></i></span>
@@ -60,11 +57,7 @@
                                 <i class="feather icon-plus mr-2"></i>Report New Issue
                             </a>
                         </li>
-                        {{-- <li>
-                            <a href="{{ route('reports.index') }}">
-                                <i class="feather icon-list mr-2"></i>View Reports
-                            </a>
-                        </li> --}}
+                        
                         <li>
                             <a href="tel:+233XXXXXXXXX">
                                 <i class="feather icon-phone mr-2"></i>Call Support
@@ -78,49 +71,9 @@
                     </ul>
                 </li>
 
-                <!-- Quick Actions -->
-                {{-- <li class="nav-item pcoded-menu-caption">
-                    <label>Quick Actions</label>
-                </li>
-                
-                <li class="nav-item">
-                    <a href="{{ route('home') }}?filter=featured" class="nav-link">
-                        <span class="pcoded-micon"><i class="feather icon-award text-warning"></i></span>
-                        <span class="pcoded-mtext">Featured Properties</span>
-                    </a>
-                </li>
-                
-                <li class="nav-item">
-                    <a href="{{ route('home') }}?filter=discount" class="nav-link">
-                        <span class="pcoded-micon"><i class="feather icon-tag text-success"></i></span>
-                        <span class="pcoded-mtext">Special Offers</span>
-                    </a>
-                </li>
-                
-                <li class="nav-item">
-                    <a href="{{ route('home') }}?filter=available" class="nav-link">
-                        <span class="pcoded-micon"><i class="feather icon-check-circle text-primary"></i></span>
-                        <span class="pcoded-mtext">Available Now</span>
-                    </a>
-                </li>
-
-                <li class="nav-item">
-                    <a href="{{ route('home') }}?filter=luxury" class="nav-link">
-                        <span class="pcoded-micon"><i class="feather icon-star text-warning"></i></span>
-                        <span class="pcoded-mtext">Luxury Suites</span>
-                    </a>
-                </li> --}}
-
                 <!-- Information -->
                 <li class="nav-item pcoded-menu-caption">
                     <label>Information</label>
-                </li>
-
-                <li class="nav-item">
-                    {{-- <a href="{{ route('about') }}" class="nav-link">
-                        <span class="pcoded-micon"><i class="feather icon-info text-info"></i></span>
-                        <span class="pcoded-mtext">About Us</span>
-                    </a> --}}
                 </li>
 
                 <li class="nav-item">
@@ -161,7 +114,7 @@
                     </div>
                     <div class="mt-2">
                         <small class="text-muted">
-                            <i class="feather icon-map-pin mr-1"></i> Opong Peprah Lodge
+                            <i class="feather icon-map-pin mr-1"></i> Oppong Peprah Lodge
                         </small>
                     </div>
                 </div>
