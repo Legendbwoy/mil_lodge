@@ -6,7 +6,7 @@
             <!-- User Profile Section (Simplified) -->
             <div class="">
                 <div class="main-menu-header">
-                    <img class="img-radius" src="assets/images/user/avatar-2.jpg" alt="User-Profile-Image">
+                    {{-- <img class="img-radius" src="assets/images/user/avatar-2.jpg" alt="User-Profile-Image"> --}}
                     <div class="user-details">
                         <div id="more-details">Welcome Guest <i class="fa fa-caret-down"></i></div>
                     </div>
@@ -46,13 +46,7 @@
                     </a>
                 </li>
 
-                <!-- Book Accommodation -->
-                <li class="nav-item">
-                    <a href="{{ route('home') }}" class="nav-link">
-                        <span class="pcoded-micon"><i class="feather icon-search"></i></span>
-                        <span class="pcoded-mtext">Find Accommodation</span>
-                    </a>
-                </li>
+                
 
                 <!-- Reports & Issues -->
                 <li class="nav-item pcoded-hasmenu">
@@ -85,7 +79,7 @@
                 </li>
 
                 <!-- Quick Actions -->
-                <li class="nav-item pcoded-menu-caption">
+                {{-- <li class="nav-item pcoded-menu-caption">
                     <label>Quick Actions</label>
                 </li>
                 
@@ -115,7 +109,7 @@
                         <span class="pcoded-micon"><i class="feather icon-star text-warning"></i></span>
                         <span class="pcoded-mtext">Luxury Suites</span>
                     </a>
-                </li>
+                </li> --}}
 
                 <!-- Information -->
                 <li class="nav-item pcoded-menu-caption">
