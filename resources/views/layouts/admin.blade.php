@@ -169,128 +169,128 @@
     <!-- [ Include Navigation ] end -->
 
     <!-- [ Header ] start -->
-    <header class="navbar pcoded-header navbar-expand-lg navbar-light header-blue">
-        <div class="m-header">
-            <a class="mobile-menu" id="mobile-collapse" href="#!"><span></span></a>
-            <a href="#!" class="b-brand">
-                <!-- 3D rotating GAF Logo with mirrored back -->
-                <div class="logo-wrapper">
-                    <div class="logo-3d-container logo-globe-rotate">
-                        <img src="{{ asset('assets/images/GAF-Logo.png') }}" alt="GAF Accommodation Front" 
-                             class="logo-3d-front logo-3d-depth">
-                        <img src="{{ asset('assets/images/GAF-Logo.png') }}" alt="GAF Accommodation Back" 
-                             class="logo-3d-back logo-3d-depth">
+<header class="navbar pcoded-header navbar-expand-lg navbar-light header-blue">
+    <div class="m-header">
+        <a class="mobile-menu" id="mobile-collapse" href="#!"><span></span></a>
+        <a href="{{ route('admin.dashboard') }}" class="b-brand">
+            <!-- 3D rotating GAF Logo with mirrored back -->
+            <div class="logo-wrapper">
+                <div class="logo-3d-container logo-globe-rotate">
+                    <img src="{{ asset('assets/images/GAF-Logo.png') }}" alt="GAF Accommodation Front" 
+                         class="logo-3d-front logo-3d-depth">
+                    <img src="{{ asset('assets/images/GAF-Logo.png') }}" alt="GAF Accommodation Back" 
+                         class="logo-3d-back logo-3d-depth">
+                </div>
+            </div>
+        </a>
+        <a href="#!" class="mob-toggler">
+            <i class="feather icon-more-vertical"></i>
+        </a>
+    </div>
+    <div class="collapse navbar-collapse">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+                <a href="#!" class="pop-search"><i class="feather icon-search"></i></a>
+                <div class="search-bar">
+                    <input type="text" class="form-control border-0 shadow-none" placeholder="Search here">
+                    <button type="button" class="close" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            </li>
+        </ul>
+        <ul class="navbar-nav ml-auto">
+            <!-- Notifications Dropdown -->
+            <li>
+                <div class="dropdown">
+                    <a class="dropdown-toggle position-relative" href="#" data-toggle="dropdown" id="notificationDropdown">
+                        <i class="icon feather icon-bell"></i>
+                        @if(isset($checkoutNotifications) && count($checkoutNotifications) > 0)
+                            <span class="notification-badge" id="notificationCount">
+                                {{ count($checkoutNotifications) }}
+                            </span>
+                        @endif
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right notification" style="width: 400px; max-height: 500px; overflow-y: auto;">
+                        <div class="noti-head">
+                            <h6 class="d-inline-block m-b-0">Check-out Notifications</h6>
+                            <div class="float-right">
+                                <a href="#!" class="m-r-10" id="markAllRead">mark as read</a>
+                                <a href="#!" id="clearAll">clear all</a>
+                            </div>
+                        </div>
+                        <ul class="noti-body" id="notificationList">
+                            @if(isset($checkoutNotifications) && count($checkoutNotifications) > 0)
+                                @foreach($checkoutNotifications as $notification)
+                                    @php
+                                        // Safely get notification values with defaults
+                                        $icon = $notification['icon'] ?? 'bell';
+                                        $color = $notification['color'] ?? 'primary';
+                                        $type = $notification['type'] ?? 'info';
+                                        $message = $notification['message'] ?? 'Notification';
+                                        $accommodation = $notification['accommodation'] ?? 'Unknown Accommodation';
+                                        $checkOutTime = $notification['check_out_time'] ?? 'Unknown';
+                                        $timeRemaining = $notification['time_remaining'] ?? 'Unknown';
+                                    @endphp
+                                    <li class="notification notification-item {{ $type }}-notification">
+                                        <div class="media">
+                                            <div class="media-body">
+                                                <p class="mb-1">
+                                                    <strong>
+                                                        <i class="feather icon-{{ $icon }} text-{{ $color }} mr-1"></i>
+                                                        {{ $message }}
+                                                    </strong>
+                                                </p>
+                                                <p class="mb-1 small">
+                                                    <i class="feather icon-home mr-1"></i>{{ $accommodation }}
+                                                </p>
+                                                <p class="mb-0 small text-muted">
+                                                    <i class="feather icon-clock mr-1"></i>
+                                                    Check-out: {{ $checkOutTime }}
+                                                    <span class="ml-2">•</span>
+                                                    <span class="ml-2 text-{{ $color }}">
+                                                        {{ $timeRemaining }} left
+                                                    </span>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </li>
+                                @endforeach
+                            @else
+                                <li class="empty-notifications">
+                                    <i class="feather icon-check-circle text-success" style="font-size: 48px;"></i>
+                                    <p class="mt-2 mb-0">No upcoming check-outs</p>
+                                    <small>You're all caught up!</small>
+                                </li>
+                            @endif
+                        </ul>
+                        <div class="noti-footer">
+                            <a href="{{ route('admin.bookings.index') }}">View All Bookings</a>
+                        </div>
                     </div>
                 </div>
-            </a>
-            <a href="#!" class="mob-toggler">
-                <i class="feather icon-more-vertical"></i>
-            </a>
-        </div>
-        <div class="collapse navbar-collapse">
-            <ul class="navbar-nav mr-auto">
-                <li class="nav-item">
-                    <a href="#!" class="pop-search"><i class="feather icon-search"></i></a>
-                    <div class="search-bar">
-                        <input type="text" class="form-control border-0 shadow-none" placeholder="Search here">
-                        <button type="button" class="close" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                </li>
-            </ul>
-            <ul class="navbar-nav ml-auto">
-                <!-- Notifications Dropdown -->
-                <li>
-                    <div class="dropdown">
-                        <a class="dropdown-toggle position-relative" href="#" data-toggle="dropdown" id="notificationDropdown">
-                            <i class="icon feather icon-bell"></i>
-                            @if(isset($checkoutNotifications) && count($checkoutNotifications) > 0)
-                                <span class="notification-badge" id="notificationCount">
-                                    {{ count($checkoutNotifications) }}
-                                </span>
-                            @endif
-                        </a>
-                        <div class="dropdown-menu dropdown-menu-right notification" style="width: 400px; max-height: 500px; overflow-y: auto;">
-                            <div class="noti-head">
-                                <h6 class="d-inline-block m-b-0">Check-out Notifications</h6>
-                                <div class="float-right">
-                                    <a href="#!" class="m-r-10" id="markAllRead">mark as read</a>
-                                    <a href="#!" id="clearAll">clear all</a>
-                                </div>
-                            </div>
-                            <ul class="noti-body" id="notificationList">
-                                @if(isset($checkoutNotifications) && count($checkoutNotifications) > 0)
-                                    @foreach($checkoutNotifications as $notification)
-                                        @php
-                                            // Safely get notification values with defaults
-                                            $icon = $notification['icon'] ?? 'bell';
-                                            $color = $notification['color'] ?? 'primary';
-                                            $type = $notification['type'] ?? 'info';
-                                            $message = $notification['message'] ?? 'Notification';
-                                            $accommodation = $notification['accommodation'] ?? 'Unknown Accommodation';
-                                            $checkOutTime = $notification['check_out_time'] ?? 'Unknown';
-                                            $timeRemaining = $notification['time_remaining'] ?? 'Unknown';
-                                        @endphp
-                                        <li class="notification notification-item {{ $type }}-notification">
-                                            <div class="media">
-                                                <div class="media-body">
-                                                    <p class="mb-1">
-                                                        <strong>
-                                                            <i class="feather icon-{{ $icon }} text-{{ $color }} mr-1"></i>
-                                                            {{ $message }}
-                                                        </strong>
-                                                    </p>
-                                                    <p class="mb-1 small">
-                                                        <i class="feather icon-home mr-1"></i>{{ $accommodation }}
-                                                    </p>
-                                                    <p class="mb-0 small text-muted">
-                                                        <i class="feather icon-clock mr-1"></i>
-                                                        Check-out: {{ $checkOutTime }}
-                                                        <span class="ml-2">•</span>
-                                                        <span class="ml-2 text-{{ $color }}">
-                                                            {{ $timeRemaining }} left
-                                                        </span>
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        </li>
-                                    @endforeach
-                                @else
-                                    <li class="empty-notifications">
-                                        <i class="feather icon-check-circle text-success" style="font-size: 48px;"></i>
-                                        <p class="mt-2 mb-0">No upcoming check-outs</p>
-                                        <small>You're all caught up!</small>
-                                    </li>
-                                @endif
-                            </ul>
-                            <div class="noti-footer">
-                                <a href="{{ route('admin.bookings.index') }}">View All Bookings</a>
-                            </div>
+            </li>
+            
+            <li>
+                <div class="dropdown drp-user">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                        <i class="feather icon-user"></i>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right profile-notification">
+                        <div class="pro-head">
+                            <img src="{{ asset('assets/images/user/avatar-1.jpg') }}" class="img-radius" alt="User-Profile-Image">
+                            <span>John Doe</span>
+                            <a href="#!" class="dud-logout" title="Logout">
+                                <i class="feather icon-log-out"></i>
+                            </a>
                         </div>
                     </div>
-                </li>
-                
-                <li>
-                    <div class="dropdown drp-user">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                            <i class="feather icon-user"></i>
-                        </a>
-                        <div class="dropdown-menu dropdown-menu-right profile-notification">
-                            <div class="pro-head">
-                                <img src="{{ asset('assets/images/user/avatar-1.jpg') }}" class="img-radius" alt="User-Profile-Image">
-                                <span>John Doe</span>
-                                <a href="#!" class="dud-logout" title="Logout">
-                                    <i class="feather icon-log-out"></i>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </li>
-            </ul>
-        </div>
-    </header>
-    <!-- [ Header ] end -->
+                </div>
+            </li>
+        </ul>
+    </div>
+</header>
+<!-- [ Header ] end -->
 
     <!-- [ Main Content ] start -->
     <div class="pcoded-main-container">
